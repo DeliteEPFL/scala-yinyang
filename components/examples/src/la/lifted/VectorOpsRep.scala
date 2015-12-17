@@ -284,15 +284,18 @@ trait BooleanDSL extends PolymorphicBase {
   }
 }
 
-trait BooleanDSLYY extends BooleanDSL with Executable with Staged {
+trait LMSDSL extends Base with BaseExp with BaseYinYangManifest with Executable with Staged
+  with BooleanDSL {
+  type R[+T] = Rep[T]
+  def generateCode(className: String): String = ??? //Base extends CodeGenerator
+  //  def compile[T: TypeRep, Ret](unstableHoleIds: Set[Int]): Ret = ??? //not needed?
+  def execute[T: TypeTag](params: Any*) = ??? //
+}
+
+trait BooleanDSLYY extends BooleanDSL with Executable with Staged { //those traits need to be extended
   def compile[T: TypeRep, Ret](unstableHoleIds: Set[Int]): Ret = ???
   def generateCode(className: String): String = ???
   def execute[T: TypeTag](params: Any*) = ???
-
-  //  type Vector[T] = dsl.la.Vector[T]
-  //  object `dsl.la.Vector` {
-  //    def apply[T: Numeric](v: R[T]*): R[Vector[T]] = ???
-  //  }
 }
 
 trait MatchingOps extends PolymorphicBase {

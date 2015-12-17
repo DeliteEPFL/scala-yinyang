@@ -12,7 +12,7 @@ package object la {
   def laDebug[T](block: => T): T = macro implementations.liftRepDebug[T]
   def boolS[T](block: => T): T = macro implementations.boolShallow[T]
   def boolD[T](block: => T): T = macro implementations.boolYY[T]
-  //  def boolDLMS[T](block: => T): T = macro implementations.boolLMS[T]
+  def boolDLMS[T](block: => T): T = macro implementations.boolLMS[T]
   //  def typeOnly[T](block: => T): T = macro implementation.typeTranform[T]
 
   object implementations {
@@ -73,6 +73,23 @@ package object la {
         "dsl.la.rep.BooleanDSLYY",
         new GenericTypeTransformer[c.type](c) {
           override val IRType = "R"
+        },
+        None, None,
+        Map(
+          "direct" -> false,
+          "virtualizeFunctions" -> false,
+          "virtualizeValDef" -> false,
+          "debug" -> 3,
+          "restrictLanguage" -> false,
+          "ascribeTerms" -> false),
+        None)(block)
+    }
+
+    def boolLMS[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
+      YYTransformer[c.type, T](c)(
+        "dsl.la.rep.BooleanDSLLMS",
+        new GenericTypeTransformer[c.type](c) {
+          override val IRType = "Rep"
         },
         None, None,
         Map(

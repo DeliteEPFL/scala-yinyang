@@ -27,6 +27,16 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
     }
   }
 
+  it should "be very deep" in {
+    intercept[NotImplementedError] {
+      boolDLMS {
+        val x = true
+        x
+        //true || false //only this statement which throw an "$lift" not found exception!
+      }
+    }
+  }
+
   "Generic translation" should "work for val definitions" in {
     intercept[NotImplementedError] {
       la {
