@@ -3,12 +3,13 @@ package dsl.la.rep
 import ch.epfl.yinyang.api._
 import ch.epfl.yinyang.polymorphic._
 import ch.epfl.yinyang.polymorphic.generic._
+import org.scala_lang.virtualized.SourceContext
+
 //import dsl.la.rep.BooleanDSL.BooleanOps
 import scala.reflect.ClassTag
 import reflect.runtime.universe._
 import ch.epfl.yinyang.example._
-import scala.virtualization.lms.common.BaseExp
-import scala.virtualization.lms.common.{ BooleanOps, LiftBoolean, BooleanOpsExp }
+import scala.virtualization.lms.common.{ Base => _, _ } //YY also defines a Base trait
 //import ch.epfl.yinyang.EmbeddedControls //???this project is created tough??
 
 trait ClassTagOps extends PolymorphicBase {
@@ -286,7 +287,12 @@ trait BooleanDSL extends PolymorphicBase {
   }
 }
 
-trait BooleanLMS extends BooleanOpsExp with LiftBoolean
+trait BooleanLMS extends BooleanOpsExp with VariablesExp with PolymorphicBaseManifest { // with LiftBoolean
+  implicit object LiftBoolean extends LiftEvidence[Boolean, R[Boolean]] {
+    def lift(v: Boolean): R[Boolean] = ???
+    def hole(tpe: Manifest[Boolean], symbolId: Int): R[Boolean] = ???
+  }
+}
 
 trait BooleanDSLLMS extends Base with BaseExp with BaseYinYangManifest with Executable with Staged
   with BooleanLMS {

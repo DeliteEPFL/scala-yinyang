@@ -47,7 +47,7 @@ package object la {
           "direct" -> false,
           "virtualizeFunctions" -> true,
           "virtualizeValDef" -> true,
-          "debug" -> 3,
+          "debug" -> 0,
           "restrictLanguage" -> false,
           "ascribeTerms" -> false),
         None)(block)
@@ -63,7 +63,7 @@ package object la {
           "direct" -> true,
           "virtualizeFunctions" -> true,
           "virtualizeValDef" -> true,
-          "debug" -> 3,
+          "debug" -> 0,
           "restrictLanguage" -> false,
           "ascribeTerms" -> false),
         None)(block)
@@ -79,7 +79,7 @@ package object la {
           "direct" -> false,
           "virtualizeFunctions" -> false,
           "virtualizeValDef" -> false,
-          "debug" -> 3,
+          "debug" -> 0,
           "restrictLanguage" -> false,
           "ascribeTerms" -> false),
         None)(block)
