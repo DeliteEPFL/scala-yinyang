@@ -43,6 +43,10 @@ trait PBase extends Base with BaseYinYang {
   type R[+T]
 }
 
-trait PolymorphicBase extends PBase with BaseYinYangTypeTag
+trait PolymorphicBase extends PBase with BaseYinYangTypeTag {
+  type R[+T]
+}
 
-trait PolymorphicBaseManifest extends PBase with BaseYinYangManifest
+trait PolymorphicBaseManifest extends PBase with BaseYinYangManifest {
+  type R[+T]
+}

@@ -3,10 +3,12 @@ package dsl.la.rep
 import ch.epfl.yinyang.api._
 import ch.epfl.yinyang.polymorphic._
 import ch.epfl.yinyang.polymorphic.generic._
+//import dsl.la.rep.BooleanDSL.BooleanOps
 import scala.reflect.ClassTag
 import reflect.runtime.universe._
 import ch.epfl.yinyang.example._
 import scala.virtualization.lms.common.BaseExp
+import scala.virtualization.lms.common.{ BooleanOps, LiftBoolean, BooleanOpsExp }
 //import ch.epfl.yinyang.EmbeddedControls //???this project is created tough??
 
 trait ClassTagOps extends PolymorphicBase {
@@ -284,8 +286,10 @@ trait BooleanDSL extends PolymorphicBase {
   }
 }
 
-trait LMSDSL extends Base with BaseExp with BaseYinYangManifest with Executable with Staged
-  with BooleanDSL {
+trait BooleanLMS extends BooleanOpsExp with LiftBoolean
+
+trait BooleanDSLLMS extends Base with BaseExp with BaseYinYangManifest with Executable with Staged
+  with BooleanLMS {
   type R[+T] = Rep[T]
   def generateCode(className: String): String = ??? //Base extends CodeGenerator
   //  def compile[T: TypeRep, Ret](unstableHoleIds: Set[Int]): Ret = ??? //not needed?
