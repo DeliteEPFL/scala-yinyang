@@ -6,9 +6,27 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import reflect.runtime.universe._
 import java.io.{ PrintStream, ByteArrayOutputStream }
+import scala.reflect.macros.Universe
 
 @RunWith(classOf[JUnitRunner])
 class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
+  "Boolean translation" should "be shallow" in {
+    val x = boolS {
+      true || false
+    }
+    assert(x)
+  }
+
+  it should "be deep" in {
+    intercept[NotImplementedError] {
+      boolD {
+        val x = true
+        x
+        //true || false //only this statement which throw an "$lift" not found exception!
+      }
+    }
+  }
+
   "Generic translation" should "work for val definitions" in {
     intercept[NotImplementedError] {
       la {
@@ -103,5 +121,4 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
       }
     }
   }
-
 }

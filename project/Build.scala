@@ -37,7 +37,8 @@ object YinYangBuild extends Build {
       scalaOrg % "scala-reflect" % ver,
       scalaOrg % "scala-compiler" % ver,
       "org.scalatest" % "scalatest_2.11" % "2.1.5" % "test",
-      "junit" % "junit" % "4.11" % "test" // we need JUnit explicitly
+      "junit" % "junit" % "4.11" % "test",
+      "EPFL" % "macro-lms_2.11" % "1.0.0-wip-macro"
   )))
 
   // modules
@@ -46,6 +47,7 @@ object YinYangBuild extends Build {
   lazy val yy_paradise   = Project(id = "paradise",         base = file("components/paradise") , settings = defaults ++ paradise ++ Seq(name := "yinyang-paradise")) dependsOn(yy_core)
   lazy val yinyang       = Project(id = "yinyang",          base = file("components/yin-yang") , settings = defaults ++ Seq(name := "scala-yinyang")) dependsOn(yy_core)
   lazy val examples      = Project(id = "examples",         base = file("components/examples") , settings = defaults ++ Seq(publishArtifact := false)) dependsOn(yinyang)
+  lazy val yy_lms        = Project(id = "yy_lms",           base = file("components/yy-lms")   , settings = defaults ++ Seq(name := "yy-lms")) dependsOn(yinyang, yy_core, yy_paradise, examples)
 
   lazy val defaults = projectSettings ++ scalaSettings ++ formatSettings ++ libraryDeps ++ Seq(
     resolvers +=  "OSSH" at "https://oss.sonatype.org/content/groups/public",

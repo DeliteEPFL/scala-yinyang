@@ -12,6 +12,6 @@ trait YYConfig {
   val ascribeTerms: Boolean = config("ascribeTerms").asInstanceOf[Boolean]
   val liftTypes: List[Context#Type] = config("liftTypes").asInstanceOf[List[Context#Type]] // SI-7234  prevents us from having it as a field to YYTransformers
   val virtualizeFunctions: Boolean = config("virtualizeFunctions").asInstanceOf[Boolean]
-  val virtualizeValDef: Boolean = config("virtualizeValDef").asInstanceOf[Boolean]
+  def virtualizeValDef: Boolean = config("virtualizeValDef").asInstanceOf[Boolean]
   val failCompilation: Boolean = config("failCompilation").asInstanceOf[Boolean]
 }

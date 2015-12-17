@@ -1,7 +1,7 @@
 package ch.epfl.yinyang.example
 import ch.epfl.yinyang.api._
 
-trait Base extends BaseYinYangTypeTag with CodeGenerator {
+trait Base extends CodeGenerator { this: BaseYinYang => //why choose a
 
   /**
    * Abstract super class for implicit lifters that the DSL author needs to provide.
@@ -36,9 +36,13 @@ trait Base extends BaseYinYangTypeTag with CodeGenerator {
   def $lift[T, Ret](v: T)(implicit liftEv: LiftEvidence[T, Ret]): Ret =
     liftEv.lift(v)
 
-  def main(): Any
+  def main(): Any //what is this one for?
 }
 
-trait PolymorphicBase extends Base {
+trait PBase extends Base with BaseYinYang {
   type R[+T]
 }
+
+trait PolymorphicBase extends PBase with BaseYinYangTypeTag
+
+trait PolymorphicBaseManifest extends PBase with BaseYinYangManifest

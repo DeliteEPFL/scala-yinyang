@@ -6,6 +6,8 @@ import ch.epfl.yinyang.polymorphic.generic._
 import scala.reflect.ClassTag
 import reflect.runtime.universe._
 import ch.epfl.yinyang.example._
+import scala.virtualization.lms.common.BaseExp
+//import ch.epfl.yinyang.EmbeddedControls //???this project is created tough??
 
 trait ClassTagOps extends PolymorphicBase {
   //  ClassTags posed a bit of a challenge: You want to keep the original
@@ -254,10 +256,43 @@ trait ArrayDSL extends PolymorphicBase {
 //}
 
 trait BooleanDSL extends PolymorphicBase {
+  trait BooleanOps {
+    def unary_! : R[Boolean]
+    def ==(x: R[Boolean]): R[Boolean]
+    def !=(x: R[Boolean]): R[Boolean]
+    def ||(x: R[Boolean]): R[Boolean]
+    def &&(x: R[Boolean]): R[Boolean]
+    def |(x: R[Boolean]): R[Boolean]
+    def &(x: R[Boolean]): R[Boolean]
+    def ^(x: R[Boolean]): R[Boolean]
+  }
+
+  implicit class BooleanOpsOf(v: R[Boolean]) extends BooleanOps {
+    def unary_! : R[Boolean] = ???
+    def ==(x: R[Boolean]): R[Boolean] = ???
+    def !=(x: R[Boolean]): R[Boolean] = ???
+    def ||(x: R[Boolean]): R[Boolean] = ???
+    def &&(x: R[Boolean]): R[Boolean] = ???
+    def |(x: R[Boolean]): R[Boolean] = ???
+    def &(x: R[Boolean]): R[Boolean] = ???
+    def ^(x: R[Boolean]): R[Boolean] = ???
+  }
+
   implicit object LiftBoolean extends LiftEvidence[Boolean, R[Boolean]] {
     def lift(v: Boolean): R[Boolean] = ???
     def hole(tpe: TypeTag[Boolean], symbolId: Int): R[Boolean] = ???
   }
+}
+
+trait BooleanDSLYY extends BooleanDSL with Executable with Staged {
+  def compile[T: TypeRep, Ret](unstableHoleIds: Set[Int]): Ret = ???
+  def generateCode(className: String): String = ???
+  def execute[T: TypeTag](params: Any*) = ???
+
+  //  type Vector[T] = dsl.la.Vector[T]
+  //  object `dsl.la.Vector` {
+  //    def apply[T: Numeric](v: R[T]*): R[Vector[T]] = ???
+  //  }
 }
 
 trait MatchingOps extends PolymorphicBase {
