@@ -20,22 +20,37 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
   it should "be deep" in {
     intercept[NotImplementedError] {
       boolD {
-        val x = true
-        x
+        //        val a =
+        val x: Boolean = false
+        val y: Boolean = true
+        x || true
         //true || false //only this statement which throw an "$lift" not found exception!
       }
     }
+    // sys.error("deep: " + y)
   }
 
-  it should "be very deep" in {
+  it should "be int deep" in {
     intercept[NotImplementedError] {
-      boolDLMS {
-        val x = true
+      intD {
+        val x = 45
         x
         //true || false //only this statement which throw an "$lift" not found exception!
       }
     }
+    // sys.error("deep: " + y)
   }
+
+  //  it should "be very deep" in {
+  //    //intercept[NotImplementedError] {
+  //    val y: Int = boolDLMS {
+  //      val x = true
+  //      x
+  //      //true || false //only this statement which throw an "$lift" not found exception!
+  //    }
+  //    sys.error("" + y)
+  //    //}
+  //  }
 
   "Generic translation" should "work for val definitions" in {
     intercept[NotImplementedError] {

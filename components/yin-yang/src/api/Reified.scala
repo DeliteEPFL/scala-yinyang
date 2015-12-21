@@ -12,4 +12,6 @@ import reflect.runtime.universe.TypeTag
  *    dsl.reify($tpe[Ret])
  *  }}}
  */
-trait Reified { self: BaseYinYang => }
+trait Reified { self: BaseYinYang =>
+  def reify[T](t: TypeRep[T]): T = ??? //null.asInstanceOf[T]
+}

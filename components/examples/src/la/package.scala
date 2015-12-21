@@ -4,7 +4,6 @@ import ch.epfl.yinyang._
 import ch.epfl.yinyang.typetransformers._
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox.Context
-import scala.reflect.api.Trees
 
 package object la {
 
@@ -12,6 +11,7 @@ package object la {
   def laDebug[T](block: => T): T = macro implementations.liftRepDebug[T]
   def boolS[T](block: => T): T = macro implementations.boolShallow[T]
   def boolD[T](block: => T): T = macro implementations.boolYY[T]
+  def intD[T](block: => T): T = macro implementations.intYY[T]
   def boolDLMS[T](block: => T): T = macro implementations.boolLMS[T]
   //  def typeOnly[T](block: => T): T = macro implementation.typeTranform[T]
 
@@ -68,6 +68,23 @@ package object la {
           "ascribeTerms" -> false),
         None)(block)
 
+    def intYY[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
+      YYTransformer[c.type, T](c)(
+        "dsl.la.rep.IntDSL",
+        new GenericTypeTransformer[c.type](c) {
+          override val IRType = "R"
+        },
+        None, None,
+        Map(
+          "direct" -> false,
+          "virtualizeFunctions" -> false,
+          "virtualizeValDef" -> false,
+          "debug" -> 3,
+          "restrictLanguage" -> false,
+          "ascribeTerms" -> false),
+        None)(block)
+    }
+
     def boolYY[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
       YYTransformer[c.type, T](c)(
         "dsl.la.rep.BooleanDSLYY",
@@ -79,11 +96,24 @@ package object la {
           "direct" -> false,
           "virtualizeFunctions" -> false,
           "virtualizeValDef" -> false,
-          "debug" -> 0,
+          "debug" -> 3,
           "restrictLanguage" -> false,
           "ascribeTerms" -> false),
         None)(block)
     }
+
+    //    def boolLMS[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
+    //
+    //      object O extends TypeTreeTransformation {
+    //
+    //        //private type Ctx = this.Ctx
+    //        val typeTransformer = new GenericTypeTransformer[Ctx](c) {
+    //          override val IRType = "Rep"
+    //        }
+    //        new TypeTreeTransformer().transform(block.tree.asInstanceOf[this.c.universe.Tree])
+    //      }
+    //      ???
+    //    }
 
     def boolLMS[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
       YYTransformer[c.type, T](c)(
@@ -102,20 +132,27 @@ package object la {
         None)(block)
     }
   }
-}
 
-//    object implementation {
-//      def typeTranform[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
-//        import c.universe._
-//        class TTTransformer extends TypeTreeTransformation {
-//          //        type Ctx = C [C <: Context](x: C)
-//          val typeTransformer =
-//            new GenericTypeTransformer[c.type](c) {
-//              override val IRType = "R"
-//            }
-//          def transform(t: Tree) = new TypeTreeTransformer().transform(t)
-//        }
-//        c.Expr(new TTTransformer(c).transform(block.tree))
-//      }
-//    }
-//}
+  object implementation { //extends scala.reflect.api.Trees
+    //abstract
+    class TTTransformer[C <: Context, T](val c: C) extends TypeTreeTransformation {
+      type Ctx = C
+      import c.universe._ //Tree, TypTree, ValDef, showRaw...
+      val debugLevel = 3
+      val typeTransformer =
+        new GenericTypeTransformer[c.type](c) { //[Ctx]
+          override val IRType = "Rep"
+        }
+      def apply[T](block: c.Expr[T]): c.Expr[T] = {
+        c.Expr(TypeTreeTransformer(block.tree))
+      }
+      //import typeTransformer._ //already imported in super
+      //def transform(t: c.Tree) = typeTransformer transform (typeTransformer.other, inType)
+    }
+
+    def typeTranform[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
+      //import c.universe._
+      new TTTransformer[c.type, T](c)(block)
+    }
+  }
+}

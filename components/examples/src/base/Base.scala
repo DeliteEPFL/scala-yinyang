@@ -1,7 +1,8 @@
 package ch.epfl.yinyang.example
 import ch.epfl.yinyang.api._
 
-trait Base extends CodeGenerator { this: BaseYinYang => //why choose a
+trait Base extends Reified //extends CodeGenerator
+{ this: BaseYinYang => //why choose a
 
   /**
    * Abstract super class for implicit lifters that the DSL author needs to provide.

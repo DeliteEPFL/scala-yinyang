@@ -149,7 +149,7 @@ trait IntDSL extends PolymorphicBase {
   }
 
   implicit object LiftInt extends LiftEvidence[Int, R[Int]] {
-    def lift(v: Int): R[Int] = ???
+    def lift(v: Int): R[Int] = ??? //IntOpsOf(v)
     def hole(tpe: TypeTag[Int], symbolId: Int): R[Int] = ???
   }
 
@@ -294,18 +294,18 @@ trait BooleanLMS extends BooleanOpsExp with VariablesExp with PolymorphicBaseMan
   }
 }
 
-trait BooleanDSLLMS extends Base with BaseExp with BaseYinYangManifest with Executable with Staged
+trait BooleanDSLLMS extends Base with BaseExp with BaseYinYangManifest with Reified
   with BooleanLMS {
   type R[+T] = Rep[T]
-  def generateCode(className: String): String = ??? //Base extends CodeGenerator
+  def generateCode(className: String): String = ??? // "45" //Base extends CodeGenerator
   //  def compile[T: TypeRep, Ret](unstableHoleIds: Set[Int]): Ret = ??? //not needed?
-  def execute[T: TypeTag](params: Any*) = ??? //
+  def execute[T: Manifest](params: Any*) = ??? //true
 }
 
-trait BooleanDSLYY extends BooleanDSL with Executable with Staged { //those traits need to be extended
-  def compile[T: TypeRep, Ret](unstableHoleIds: Set[Int]): Ret = ???
-  def generateCode(className: String): String = ???
-  def execute[T: TypeTag](params: Any*) = ???
+trait BooleanDSLYY extends BooleanDSL with Reified { //those traits need to be extended
+  //  def compile[T: TypeRep, Ret](unstableHoleIds: Set[Int]): Ret = ???
+  //def generateCode(className: String): String = ???
+  //  def execute[T: TypeTag](params: Any*) = ???
 }
 
 trait MatchingOps extends PolymorphicBase {
