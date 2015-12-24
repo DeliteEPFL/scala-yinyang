@@ -289,10 +289,10 @@ trait BooleanDSL extends PolymorphicBase {
 
 trait BooleanLMS extends BooleanOpsExp with VariablesExp with PolymorphicBaseManifest { // with LiftBoolean
   //  type R[+T] = Rep[T]
-  implicit def m[T](r: Rep[T]): T = r match { case Const(x) => x } //why do we need this?
+  //  implicit def m[T](r: Rep[T]): T = r match { case Const(x) => x } //why do we need this?
   implicit object LiftBoolean extends LiftEvidence[Boolean, Rep[Boolean]] {
-    def lift(v: Boolean): Rep[Boolean] = Const(v)
-    def hole(tpe: Manifest[Boolean], symbolId: Int): Rep[Boolean] = ??? //what is the hole transformer supposed to do?
+    def lift(v: Boolean): Rep[Boolean] = Const(v) //TODO: is this ok for lifting?
+    def hole(tpe: Manifest[Boolean], symbolId: Int): Rep[Boolean] = ??? //how to access holetable from here? or what else should we do?
   }
 }
 

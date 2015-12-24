@@ -17,7 +17,6 @@ package object la {
 
   object implementations {
     def liftRep[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
-      //      val x =
       YYTransformer[c.type, T](c)(
         "dsl.la.rep.VectorDSL",
         new GenericTypeTransformer[c.type](c) {
@@ -32,8 +31,6 @@ package object la {
           "restrictLanguage" -> false,
           "ascribeTerms" -> false),
         None)(block)
-      //      println(c.universe.showCode(x.tree))
-      //      x
     }
 
     def liftRepDebug[T](c: Context)(block: c.Expr[T]): c.Expr[T] =

@@ -30,13 +30,13 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
 
   it should "be deep" in {
     intercept[NotImplementedError] {
-      //      val u =
-      boolD {
+      val u: Any = boolD {
         //        val a =
         val x: Boolean = false
         val y: Boolean = true
-        x || true
-        //true || false //only this statement which throw an "$lift" not found exception!
+        val z = x || y
+        //scala.Predef.println("last statement is unit")
+        //() //needs LiftUnit
       }
       //      sys.error(s"RESULT: $u")
     }
@@ -52,20 +52,10 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
 
   it should "be very deep" in {
     //    intercept[NotImplementedError] {
-    //    val y =
-    //    type Rep[+T] = T
     boolDLMS {
-      val x: Boolean = true
-      x || true
-      //      val y: Boolean = false
-      //      val z = x
-      //      x || false
-      //      implicit class C(b: Boolean) { def x = b } //why?
-      //println(x)
-      //true || false //only this statement which throw an "$lift" not found exception!
-      //      sys.error("" + y)
+      val y = true
+      y //FIXME: this says that
     }
-    //    println(y)
   }
 
   "Generic translation" should "work for val definitions" in {
