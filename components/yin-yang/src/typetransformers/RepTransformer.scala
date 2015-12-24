@@ -34,6 +34,7 @@ trait RepTransformerLike[C <: Context] extends PolyTransformerLike[C] {
    * transform Type1[Type2[...]] => Rep[Type1[Type2[...]]] for non-function types
    */
   def constructRepTree(ctx: TypeContext, inType: Type): Tree = {
+
     val universe = c.universe.asInstanceOf[scala.reflect.internal.Types]
 
     ctx match {
@@ -71,8 +72,9 @@ trait RepTransformerLike[C <: Context] extends PolyTransformerLike[C] {
 class RepTransformer[C <: Context](ctx: C) extends TypeTransformer[C](ctx) with RepTransformerLike[C] with PolyTransformerLike[C] {
   import c.universe._
 
-  def transform(ctx: TypeContext, t: c.universe.Type): c.universe.Tree =
+  def transform(ctx: TypeContext, t: c.universe.Type): c.universe.Tree = {
     constructRepTree(ctx, t)
+  }
 }
 
 /**

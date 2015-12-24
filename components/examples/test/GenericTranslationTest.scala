@@ -10,15 +10,27 @@ import scala.reflect.macros.Universe
 
 @RunWith(classOf[JUnitRunner])
 class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
+  //  "Test typeOnly" should "be transformed" in {
+  //    intercept[NotImplementedError] {
+  //      val res = typeOnly {
+  //        val i = 7
+  //        val j = 4
+  //        i + j
+  //      }
+  //      println(s"typeonlytest $res")
+  //    }
+  //  }
+
   "Boolean translation" should "be shallow" in {
     val x = boolS {
       true || false
     }
-    assert(x)
+    //assert(x)
   }
 
   it should "be deep" in {
     intercept[NotImplementedError] {
+      //      val u =
       boolD {
         //        val a =
         val x: Boolean = false
@@ -26,31 +38,35 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
         x || true
         //true || false //only this statement which throw an "$lift" not found exception!
       }
+      //      sys.error(s"RESULT: $u")
     }
-    // sys.error("deep: " + y)
   }
 
-  it should "be int deep" in {
-    intercept[NotImplementedError] {
-      intD {
-        val x = 45
-        x
-        //true || false //only this statement which throw an "$lift" not found exception!
-      }
-    }
-    // sys.error("deep: " + y)
-  }
-
-  //  it should "be very deep" in {
-  //    //intercept[NotImplementedError] {
-  //    val y: Int = boolDLMS {
-  //      val x = true
-  //      x
-  //      //true || false //only this statement which throw an "$lift" not found exception!
+  //  it should "be int deep" in {
+  //    intercept[NotImplementedError] {
+  //      intD {
+  //        45
+  //      }
   //    }
-  //    sys.error("" + y)
-  //    //}
   //  }
+
+  it should "be very deep" in {
+    //    intercept[NotImplementedError] {
+    //    val y =
+    //    type Rep[+T] = T
+    boolDLMS {
+      val x: Boolean = true
+      x || true
+      //      val y: Boolean = false
+      //      val z = x
+      //      x || false
+      //      implicit class C(b: Boolean) { def x = b } //why?
+      //println(x)
+      //true || false //only this statement which throw an "$lift" not found exception!
+      //      sys.error("" + y)
+    }
+    //    println(y)
+  }
 
   "Generic translation" should "work for val definitions" in {
     intercept[NotImplementedError] {

@@ -12,6 +12,7 @@ trait TypeTreeTransformation extends MacroModule with TransformationUtils with D
 
   object TypeTreeTransformer extends (Tree => Tree) {
     def apply(tree: Tree) = {
+
       val t = new TypeTreeTransformer().transform(tree)
       log("typeTreeTransformed: " + code(t), 2)
       t
@@ -31,14 +32,14 @@ trait TypeTreeTransformation extends MacroModule with TransformationUtils with D
     }
 
     override def transform(tree: Tree): Tree = {
-
       log(s"$ident::> $tree", 3)
       ident += " "
       val result = tree match {
         case typTree: TypTree if typTree.tpe != null =>
           log(s"tp: ${showRaw(typTree)}", 3)
-          constructTypeTree(typeCtx, typTree.tpe)
-
+          val xx = constructTypeTree(typeCtx, typTree.tpe)
+          log(s"xx: $xx ")
+          xx
         case ValDef(mods, sym, tpt, rhs) if mods.hasFlag(Flag.MUTABLE) =>
           varCtx = IsVar
           val newTpt = transform(tpt)
@@ -51,19 +52,19 @@ trait TypeTreeTransformation extends MacroModule with TransformationUtils with D
           DefDef(mods, nme, transformedParams, transformedArgs, transform(tpt), transform(body))
 
         case TypeApply(mth, targs) =>
+          log(s"mth: $mth ")
+          log(s"targs: $targs ")
           val liftedArgs = targs map (v => withCtx(TypeArgCtx)(transform(v)))
           TypeApply(transform(mth), liftedArgs)
 
         case _ =>
           super.transform(tree)
       }
-
       ident = ident.tail
       log(s"$ident<:: ${showRaw(result)}", 3)
       result
     }
   }
 
-  def constructTypeTree(tctx: TypeContext, inType: Type): Tree =
-    typeTransformer transform (tctx, inType)
+  def constructTypeTree(tctx: TypeContext, inType: Type): Tree = typeTransformer transform (tctx, inType)
 }

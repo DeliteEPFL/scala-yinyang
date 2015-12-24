@@ -10,10 +10,10 @@ package object la {
   def la[T](block: => T): T = macro implementations.liftRep[T]
   def laDebug[T](block: => T): T = macro implementations.liftRepDebug[T]
   def boolS[T](block: => T): T = macro implementations.boolShallow[T]
-  def boolD[T](block: => T): T = macro implementations.boolYY[T]
+  def boolD[T](block: => T): T = macro implementations.boolDeep[T]
   def intD[T](block: => T): T = macro implementations.intYY[T]
   def boolDLMS[T](block: => T): T = macro implementations.boolLMS[T]
-  //  def typeOnly[T](block: => T): T = macro implementation.typeTranform[T]
+  def typeOnly[T](block: => T): T = macro implementation.typeTranform[T]
 
   object implementations {
     def liftRep[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
@@ -79,15 +79,15 @@ package object la {
           "direct" -> false,
           "virtualizeFunctions" -> false,
           "virtualizeValDef" -> false,
-          "debug" -> 3,
+          "debug" -> 0,
           "restrictLanguage" -> false,
           "ascribeTerms" -> false),
         None)(block)
     }
 
-    def boolYY[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
+    def boolDeep[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
       YYTransformer[c.type, T](c)(
-        "dsl.la.rep.BooleanDSLYY",
+        "dsl.la.rep.BooleanDSL",
         new GenericTypeTransformer[c.type](c) {
           override val IRType = "R"
         },
@@ -96,7 +96,7 @@ package object la {
           "direct" -> false,
           "virtualizeFunctions" -> false,
           "virtualizeValDef" -> false,
-          "debug" -> 3,
+          "debug" -> 0,
           "restrictLanguage" -> false,
           "ascribeTerms" -> false),
         None)(block)
@@ -117,7 +117,7 @@ package object la {
 
     def boolLMS[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
       YYTransformer[c.type, T](c)(
-        "dsl.la.rep.BooleanDSLLMS",
+        "dsl.la.rep.BooleanLMS", //don't use version with Reify
         new GenericTypeTransformer[c.type](c) {
           override val IRType = "Rep"
         },
@@ -138,21 +138,46 @@ package object la {
     class TTTransformer[C <: Context, T](val c: C) extends TypeTreeTransformation {
       type Ctx = C
       import c.universe._ //Tree, TypTree, ValDef, showRaw...
+      val name = "dsl.la.rep.BooleanDSL" //TODO: make meaningful
+      override val className = name
       val debugLevel = 3
       val typeTransformer =
-        new GenericTypeTransformer[c.type](c) { //[Ctx]
-          override val IRType = "Rep"
+        new GenericTypeTransformer[c.type](c) {
+          override val IRType = "Rep" //just forward to Rep in BooleanDSL
+          override val className = name
+          //          override def constructRepTree(ctx: TypeContext, inType: Type): Tree = {
+          //            log("GenericTypeTransformer")
+          //            super.constructRepTree(ctx, inType)
+          //          }
         }
       def apply[T](block: c.Expr[T]): c.Expr[T] = {
-        c.Expr(TypeTreeTransformer(block.tree))
+        println("NOW applying the typer")
+        println("NOW before typing : " + showCode(block.tree))
+        val t =
+          //          ValDef(Modifiers(), TermName("x"), TypeTree(), Literal(Constant(7)))
+          block.tree
+        //          Block(List(ValDef(Modifiers(), TermName("x"), TypeTree(), Literal(Constant(true)))), Literal(Constant(())))
+        //          ValDef(Modifiers(), TermName("x"), TypeTree(), Literal(Constant(true)))
+        //Literal(Constant(()))
+        val y = c.Expr(TypeTreeTransformer(t))
+        println("NOW done typing : " + showCode(y.tree))
+        val classUID = 1 //Set to something meaningful
+        val classNameG = s"generated$$${className.filter(_ != '.') + classUID}"
+        log(s"class generated? $y")
+        c.Expr(q"""
+          $y //code wrapped in DSL class with name className
+          val inst = new ${Ident(TypeName(classNameG))}
+          inst.main() //.asInstanceOf[Nothing]
+        """)
       }
       //import typeTransformer._ //already imported in super
       //def transform(t: c.Tree) = typeTransformer transform (typeTransformer.other, inType)
     }
 
     def typeTranform[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
-      //import c.universe._
-      new TTTransformer[c.type, T](c)(block)
+      val x = new TTTransformer[c.type, T](c)(block)
+      println(s"TYPETRANSFORM: $x")
+      x
     }
   }
 }

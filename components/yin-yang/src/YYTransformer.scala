@@ -122,7 +122,7 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
       val sortedHoles = captured.map(x => (x.symbol, x)).toMap.values.toSeq
         .sortBy(h => holeTable.indexOf(symbolId(h)))
 
-      val dslTree = dslType match {
+      val dslTree: Tree = dslType match {
         case tpe if tpe <:< typeOf[CodeGenerator] && !(tpe <:< typeOf[Staged]) =>
           // does not require run-time data => completely generated at compile.
           log("COMPILE TIME COMPILED", 2)
@@ -149,12 +149,22 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
           val retType = deepDealias(block.tree.tpe)
 
           q"""
-            $dsl
+            $dsl //
             val dslInstance = new ${Ident(TypeName(className))}
             dslInstance.execute[$retType](..${sortedHoles})
           """
 
-        case _ => c.abort(c.enclosingPosition, "DSL does not extend adequate traits!")
+        case _ =>
+          log(s"MY TESTING!! ${showCode(dsl)}", 2)
+          val retType = deepDealias(block.tree.tpe)
+          println(s"DSLNAME: $dslName")
+          println(s"CLASSNAME: $className")
+          q"""
+            $dsl //code wrapped in DSL class with name className
+            val inst = new ${Ident(TypeName(className))}
+            inst.main() //.asInstanceOf[Nothing]
+          """
+        //c.abort(c.enclosingPosition, "DSL does not extend adequate traits!")
       }
 
       log(s"Final tree: ${showRaw(c.untypecheck(dslTree))}", 3)
