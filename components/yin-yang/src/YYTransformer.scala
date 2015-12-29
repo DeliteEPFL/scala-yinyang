@@ -161,8 +161,7 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
           println(s"CLASSNAME: $className")
           q"""
             $dsl //code wrapped in DSL class with name className
-            val inst = new ${Ident(TypeName(className))}
-            inst.main() //.asInstanceOf[Nothing]
+            new ${Ident(TypeName(className))}
           """
         //c.abort(c.enclosingPosition, "DSL does not extend adequate traits!")
       }

@@ -291,33 +291,32 @@ trait BooleanLMS extends BooleanOps with Variables with PolymorphicBaseManifest 
   //extends BooleanOpsExp with VariablesExp with PolymorphicBaseManifest { // with LiftBoolean
 
   // Members declared in scala.virtualization.lms.common.Base
-  protected def unit[T](x: T)(implicit evidence$2: scala.reflect.Manifest[T]): T = ??? // x // to trick the typer around Rep[T]
+  protected def unit[T: Manifest](x: T): Rep[T] = ???
   // Members declared in scala.virtualization.lms.common.BooleanOps
-  def boolean_and(lhs: Boolean, rhs: Boolean)(implicit pos: org.scala_lang.virtualized.SourceContext): Boolean = ???
-  def boolean_negate(lhs: Boolean)(implicit pos: org.scala_lang.virtualized.SourceContext): Boolean = ???
-  def boolean_or(lhs: Boolean, rhs: Boolean)(implicit pos: org.scala_lang.virtualized.SourceContext): Boolean = ???
+  def boolean_negate(lhs: Rep[Boolean])(implicit pos: SourceContext): Rep[Boolean] = ???
+  def boolean_and(lhs: Rep[Boolean], rhs: Rep[Boolean])(implicit pos: SourceContext): Rep[Boolean] = ???
+  def boolean_or(lhs: Rep[Boolean], rhs: Rep[Boolean])(implicit pos: SourceContext): Rep[Boolean] = ???
   // Members declared in scala.virtualization.lms.common.ImplicitOps
-  def implicit_convert[X, Y](x: X)(implicit c: X => Y, mX: scala.reflect.Manifest[X], mY: scala.reflect.Manifest[Y], pos: org.scala_lang.virtualized.SourceContext): Y = ???
+  def implicit_convert[X, Y](x: Rep[X])(implicit c: X => Y, mX: Manifest[X], mY: Manifest[Y], pos: SourceContext): Rep[Y] = ???
   // Members declared in scala.virtualization.lms.common.ReadVarImplicit
-  implicit def readVar[T](v: Var[T])(implicit evidence$2: scala.reflect.Manifest[T], pos: org.scala_lang.virtualized.SourceContext) = ???
+  implicit def readVar[T: Manifest](v: Var[T])(implicit pos: SourceContext): Rep[T] = ???
   // Members declared in scala.virtualization.lms.common.Variables
+  def var_new[T: Manifest](init: Rep[T])(implicit pos: SourceContext): Var[T] = ???
   def var_assign[T: Manifest](lhs: Var[T], rhs: Rep[T])(implicit pos: SourceContext): Rep[Unit] = ???
-  def var_divideequals[T](lhs: Var[T], rhs: T)(implicit evidence$9: scala.reflect.Manifest[T], pos: org.scala_lang.virtualized.SourceContext) = ???
-  def var_minusequals[T](lhs: Var[T], rhs: T)(implicit evidence$7: scala.reflect.Manifest[T], pos: org.scala_lang.virtualized.SourceContext) = ???
-  def var_new[T](init: T)(implicit evidence$4: scala.reflect.Manifest[T], pos: org.scala_lang.virtualized.SourceContext) = ???
-  def var_plusequals[T](lhs: Var[T], rhs: T)(implicit evidence$6: scala.reflect.Manifest[T], pos: org.scala_lang.virtualized.SourceContext) = ???
-  def var_timesequals[T](lhs: Var[T], rhs: T)(implicit evidence$8: scala.reflect.Manifest[T], pos: org.scala_lang.virtualized.SourceContext) = ???
+  def var_plusequals[T: Manifest](lhs: Var[T], rhs: Rep[T])(implicit pos: SourceContext): Rep[Unit] = ???
+  def var_minusequals[T: Manifest](lhs: Var[T], rhs: Rep[T])(implicit pos: SourceContext): Rep[Unit] = ???
+  def var_timesequals[T: Manifest](lhs: Var[T], rhs: Rep[T])(implicit pos: SourceContext): Rep[Unit] = ???
+  def var_divideequals[T: Manifest](lhs: Var[T], rhs: Rep[T])(implicit pos: SourceContext): Rep[Unit] = ???
 
   //  type R[+T] = Rep[T]
   //  implicit def m[T](r: Rep[T]): T = r match { case Const(x) => x } //why do we need this?
-  type Rep[+T] = T //to make type checking happy
-  implicit object LiftUnit extends LiftEvidence[Unit, Rep[Unit]] {
-    def lift(v: Unit) = v //TODO: is this ok for lifting?
-    def hole(tpe: Manifest[Unit], symbolId: Int): Rep[Unit] = ??? //how to access holetable from here? or what else should we do?
-  }
-  implicit object LiftBoolean extends LiftEvidence[Boolean, Rep[Boolean]] {
-    def lift(v: Boolean): Rep[Boolean] = unit(v) //TODO: is this ok for lifting?
-    def hole(tpe: Manifest[Boolean], symbolId: Int): Rep[Boolean] = ??? //how to access holetable from here? or what else should we do?
+  //  type Rep[+T] = T //to make type checking happy
+  //  implicit def conv(u: Rep[Unit]): Unit = ()
+
+  implicit def liftAll[T: Manifest] = new LiftAll[T] //
+  class LiftAll[T: Manifest] extends LiftEvidence[T, Rep[T]] {
+    def lift(v: T): Rep[T] = unit(v) //TODO: is this ok for lifting?
+    def hole(tpe: Manifest[T], symbolId: Int): Rep[T] = ??? //how to access holetable from here? or what else should we do?
   }
 }
 
