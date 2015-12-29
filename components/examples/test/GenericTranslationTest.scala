@@ -51,9 +51,11 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
   it should "be very deep" in {
     //    intercept[NotImplementedError] {
     boolDLMS {
+
+      import org.scala_lang.virtualized.SourceContext //this is needed here to do the implicit conversions
       val x = false
-      //      val y = x || true
-      //returns unit
+      val y = x || false //ok so this is the evildoer!
+
     }
   }
 

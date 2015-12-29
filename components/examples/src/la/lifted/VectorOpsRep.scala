@@ -3,14 +3,13 @@ package dsl.la.rep
 import ch.epfl.yinyang.api._
 import ch.epfl.yinyang.polymorphic._
 import ch.epfl.yinyang.polymorphic.generic._
-import org.scala_lang.virtualized.SourceContext
 
 //import dsl.la.rep.BooleanDSL.BooleanOps
 import scala.reflect.ClassTag
 import reflect.runtime.universe._
 import ch.epfl.yinyang.example._
 import scala.virtualization.lms.common.{ Base => _, _ } //YY also defines a Base trait
-//import ch.epfl.yinyang.EmbeddedControls //???this project is created tough??
+import org.scala_lang.virtualized.SourceContext
 
 trait ClassTagOps extends PolymorphicBase {
   //  ClassTags posed a bit of a challenge: You want to keep the original
@@ -287,32 +286,10 @@ trait BooleanDSL extends PolymorphicBase {
   }
 }
 
-trait BooleanLMS extends BooleanOps with Variables with PolymorphicBaseManifest { //use this and try to set: type Rep[T] = T
-  //extends BooleanOpsExp with VariablesExp with PolymorphicBaseManifest { // with LiftBoolean
-
-  // Members declared in scala.virtualization.lms.common.Base
-  protected def unit[T: Manifest](x: T): Rep[T] = ???
-  // Members declared in scala.virtualization.lms.common.BooleanOps
-  def boolean_negate(lhs: Rep[Boolean])(implicit pos: SourceContext): Rep[Boolean] = ???
-  def boolean_and(lhs: Rep[Boolean], rhs: Rep[Boolean])(implicit pos: SourceContext): Rep[Boolean] = ???
-  def boolean_or(lhs: Rep[Boolean], rhs: Rep[Boolean])(implicit pos: SourceContext): Rep[Boolean] = ???
-  // Members declared in scala.virtualization.lms.common.ImplicitOps
-  def implicit_convert[X, Y](x: Rep[X])(implicit c: X => Y, mX: Manifest[X], mY: Manifest[Y], pos: SourceContext): Rep[Y] = ???
-  // Members declared in scala.virtualization.lms.common.ReadVarImplicit
-  implicit def readVar[T: Manifest](v: Var[T])(implicit pos: SourceContext): Rep[T] = ???
-  // Members declared in scala.virtualization.lms.common.Variables
-  def var_new[T: Manifest](init: Rep[T])(implicit pos: SourceContext): Var[T] = ???
-  def var_assign[T: Manifest](lhs: Var[T], rhs: Rep[T])(implicit pos: SourceContext): Rep[Unit] = ???
-  def var_plusequals[T: Manifest](lhs: Var[T], rhs: Rep[T])(implicit pos: SourceContext): Rep[Unit] = ???
-  def var_minusequals[T: Manifest](lhs: Var[T], rhs: Rep[T])(implicit pos: SourceContext): Rep[Unit] = ???
-  def var_timesequals[T: Manifest](lhs: Var[T], rhs: Rep[T])(implicit pos: SourceContext): Rep[Unit] = ???
-  def var_divideequals[T: Manifest](lhs: Var[T], rhs: Rep[T])(implicit pos: SourceContext): Rep[Unit] = ???
-
-  //  type R[+T] = Rep[T]
-  //  implicit def m[T](r: Rep[T]): T = r match { case Const(x) => x } //why do we need this?
-  //  type Rep[+T] = T //to make type checking happy
-  //  implicit def conv(u: Rep[Unit]): Unit = ()
-
+trait BooleanLMS extends BooleanOpsExp with VariablesExp with PolymorphicBaseManifest with LiftBoolean { //use this and try to set: type Rep[T] = T
+  implicit class BooleanOps3(y: Rep[Boolean]) extends BooleanOps(y) {
+    def ||(rhs: Rep[Boolean])(implicit pos: SourceContext) = boolean_or(y, rhs)
+  }
   implicit def liftAll[T: Manifest] = new LiftAll[T] //
   class LiftAll[T: Manifest] extends LiftEvidence[T, Rep[T]] {
     def lift(v: T): Rep[T] = unit(v) //TODO: is this ok for lifting?
