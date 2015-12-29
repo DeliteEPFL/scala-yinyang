@@ -52,7 +52,8 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
     //    intercept[NotImplementedError] {
     boolDLMS {
       val x = false
-      x || true
+      val y = x || true
+      //returns unit
     }
   }
 

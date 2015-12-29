@@ -311,6 +311,10 @@ trait BooleanLMS extends BooleanOps with Variables with PolymorphicBaseManifest 
   //  type R[+T] = Rep[T]
   //  implicit def m[T](r: Rep[T]): T = r match { case Const(x) => x } //why do we need this?
   type Rep[+T] = T //to make type checking happy
+  implicit object LiftUnit extends LiftEvidence[Unit, Rep[Unit]] {
+    def lift(v: Unit) = v //TODO: is this ok for lifting?
+    def hole(tpe: Manifest[Unit], symbolId: Int): Rep[Unit] = ??? //how to access holetable from here? or what else should we do?
+  }
   implicit object LiftBoolean extends LiftEvidence[Boolean, Rep[Boolean]] {
     def lift(v: Boolean): Rep[Boolean] = unit(v) //TODO: is this ok for lifting?
     def hole(tpe: Manifest[Boolean], symbolId: Int): Rep[Boolean] = ??? //how to access holetable from here? or what else should we do?
