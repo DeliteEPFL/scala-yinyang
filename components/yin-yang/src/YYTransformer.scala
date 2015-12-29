@@ -162,7 +162,7 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
           q"""
             $dsl //code wrapped in DSL class with name className
             val inst = new ${Ident(TypeName(className))}
-            inst.main() //.asInstanceOf[Nothing]
+            inst.main _ //.asInstanceOf[Nothing]
           """
         //c.abort(c.enclosingPosition, "DSL does not extend adequate traits!")
       }
@@ -329,7 +329,7 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
 
   def composeDSL(transformedBody: Tree): Tree = q"""
     class ${TypeName(className)} extends $dslTrait {
-      def main(): Any = {$transformedBody}
+      def main() = {$transformedBody}
     }
   """
 

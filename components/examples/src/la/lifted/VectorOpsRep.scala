@@ -287,21 +287,42 @@ trait BooleanDSL extends PolymorphicBase {
   }
 }
 
-trait BooleanLMS extends BooleanOpsExp with VariablesExp with PolymorphicBaseManifest { // with LiftBoolean
+trait BooleanLMS extends BooleanOps with Variables with PolymorphicBaseManifest { //use this and try to set: type Rep[T] = T
+  //extends BooleanOpsExp with VariablesExp with PolymorphicBaseManifest { // with LiftBoolean
+
+  // Members declared in scala.virtualization.lms.common.Base
+  protected def unit[T](x: T)(implicit evidence$2: scala.reflect.Manifest[T]): T = ??? // x // to trick the typer around Rep[T]
+  // Members declared in scala.virtualization.lms.common.BooleanOps
+  def boolean_and(lhs: Boolean, rhs: Boolean)(implicit pos: org.scala_lang.virtualized.SourceContext): Boolean = ???
+  def boolean_negate(lhs: Boolean)(implicit pos: org.scala_lang.virtualized.SourceContext): Boolean = ???
+  def boolean_or(lhs: Boolean, rhs: Boolean)(implicit pos: org.scala_lang.virtualized.SourceContext): Boolean = ???
+  // Members declared in scala.virtualization.lms.common.ImplicitOps
+  def implicit_convert[X, Y](x: X)(implicit c: X => Y, mX: scala.reflect.Manifest[X], mY: scala.reflect.Manifest[Y], pos: org.scala_lang.virtualized.SourceContext): Y = ???
+  // Members declared in scala.virtualization.lms.common.ReadVarImplicit
+  implicit def readVar[T](v: Var[T])(implicit evidence$2: scala.reflect.Manifest[T], pos: org.scala_lang.virtualized.SourceContext) = ???
+  // Members declared in scala.virtualization.lms.common.Variables
+  def var_assign[T: Manifest](lhs: Var[T], rhs: Rep[T])(implicit pos: SourceContext): Rep[Unit] = ???
+  def var_divideequals[T](lhs: Var[T], rhs: T)(implicit evidence$9: scala.reflect.Manifest[T], pos: org.scala_lang.virtualized.SourceContext) = ???
+  def var_minusequals[T](lhs: Var[T], rhs: T)(implicit evidence$7: scala.reflect.Manifest[T], pos: org.scala_lang.virtualized.SourceContext) = ???
+  def var_new[T](init: T)(implicit evidence$4: scala.reflect.Manifest[T], pos: org.scala_lang.virtualized.SourceContext) = ???
+  def var_plusequals[T](lhs: Var[T], rhs: T)(implicit evidence$6: scala.reflect.Manifest[T], pos: org.scala_lang.virtualized.SourceContext) = ???
+  def var_timesequals[T](lhs: Var[T], rhs: T)(implicit evidence$8: scala.reflect.Manifest[T], pos: org.scala_lang.virtualized.SourceContext) = ???
+
   //  type R[+T] = Rep[T]
   //  implicit def m[T](r: Rep[T]): T = r match { case Const(x) => x } //why do we need this?
+  type Rep[+T] = T //to make type checking happy
   implicit object LiftBoolean extends LiftEvidence[Boolean, Rep[Boolean]] {
-    def lift(v: Boolean): Rep[Boolean] = Const(v) //TODO: is this ok for lifting?
+    def lift(v: Boolean): Rep[Boolean] = unit(v) //TODO: is this ok for lifting?
     def hole(tpe: Manifest[Boolean], symbolId: Int): Rep[Boolean] = ??? //how to access holetable from here? or what else should we do?
   }
 }
 
-trait BooleanDSLLMS extends Base with BaseExp with BaseYinYangManifest with Reified
-  with BooleanLMS {
-  def generateCode(className: String): String = ??? // "45" //Base extends CodeGenerator
-  //  def compile[T: TypeRep, Ret](unstableHoleIds: Set[Int]): Ret = ??? //not needed?
-  def execute[T: Manifest](params: Any*) = ??? //true
-}
+//trait BooleanDSLLMS extends Base with BaseExp with BaseYinYangManifest with Reified
+//  with BooleanLMS {
+//  def generateCode(className: String): String = ??? // "45" //Base extends CodeGenerator
+//  //  def compile[T: TypeRep, Ret](unstableHoleIds: Set[Int]): Ret = ??? //not needed?
+//  def execute[T: Manifest](params: Any*) = ??? //true
+//}
 
 trait BooleanDSLYY extends BooleanDSL with Reified { //those traits need to be extended
   //  def compile[T: TypeRep, Ret](unstableHoleIds: Set[Int]): Ret = ???
