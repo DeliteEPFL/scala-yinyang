@@ -287,8 +287,8 @@ trait BooleanDSL extends PolymorphicBase {
 }
 
 trait BooleanLMS extends BooleanOpsExp with VariablesExp with PolymorphicBaseManifest with LiftBoolean { //use this and try to set: type Rep[T] = T
-//  import org.scala_lang.virtualized.SourceContext
-//  implicit val scc = org.scala_lang.virtualized.SourceContext.m
+  //  import org.scala_lang.virtualized.SourceContext
+  //  implicit val scc = org.scala_lang.virtualized.SourceContext.m
   //with the following it DOES work, WHY???
   //  implicit class BooleanOps3(y: Rep[Boolean]) extends BooleanOps(y) {
   //    def ||(rhs: Rep[Boolean])(implicit pos: SourceContext) = boolean_or(y, rhs)
