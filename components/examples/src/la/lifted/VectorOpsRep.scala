@@ -290,9 +290,9 @@ trait BooleanLMS extends BooleanOpsExp with VariablesExp with PolymorphicBaseMan
   //  import org.scala_lang.virtualized.SourceContext
   //  implicit val scc = org.scala_lang.virtualized.SourceContext.m
   //with the following it DOES work, WHY???
-  //  implicit class BooleanOps3(y: Rep[Boolean]) extends BooleanOps(y) {
-  //    def ||(rhs: Rep[Boolean])(implicit pos: SourceContext) = boolean_or(y, rhs)
-  //  }
+  implicit class BooleanOps3(y: Rep[Boolean]) extends BooleanOps(y) {
+    def ||(rhs: Rep[Boolean])(implicit pos: SourceContext) = boolean_or(y, rhs)
+  }
   implicit def liftAll[T: Manifest] = new LiftAll[T] //
   class LiftAll[T: Manifest] extends LiftEvidence[T, Rep[T]] {
     def lift(v: T): Rep[T] = unit(v) //TODO: is this ok for lifting?
