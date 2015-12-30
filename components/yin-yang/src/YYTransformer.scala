@@ -326,11 +326,25 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
     _reflInstance.get.asInstanceOf[T]
   }
 
-  def composeDSL(transformedBody: Tree): Tree = q"""
+  def composeDSL(transformedBody: Tree): Tree = {
+    import org.scala_lang.virtualized.SourceContext
+    val srcc: org.scala_lang.virtualized.SourceContext = org.scala_lang.virtualized.SourceContext.m //this will have the WRONG sourcecontext information
+    implicit val lift = Liftable[SourceContext] { p =>
+      q"""new _root_.org.scala_lang.virtualized.SourceContext {
+         val fileName = ${p.fileName}
+         val methodName = ${p.methodName}
+         val receiver = ${p.receiver}
+         val bindings = ${p.bindings}
+         }"""
+    }
+
+    q"""
     class ${TypeName(className)} extends $dslTrait {
-      def main() = {$transformedBody}
+      //implicit val srcc:org.scala_lang.virtualized.SourceContext = srcc //will contain the outer sourcecontext
+      def main() = {$transformedBody} //maybe: def apply?
     }
   """
+  }
 
   def injectImport(body: Tree): Tree = q"""
     import _root_.ch.epfl.yinyang.shallow._;

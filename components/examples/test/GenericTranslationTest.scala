@@ -1,5 +1,6 @@
 package mpde.vector.test
 
+import dsl.la.rep.BooleanLMS
 import org.scalatest._
 import dsl.la._
 import org.junit.runner.RunWith
@@ -48,15 +49,24 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
   //    }
   //  }
 
+  import org.scala_lang.virtualized.SourceContext
+  val srcc: SourceContext = SourceContext.m
+
   it should "be very deep" in {
     //    intercept[NotImplementedError] {
-    boolDLMS {
-
-      import org.scala_lang.virtualized.SourceContext //this is needed here to do the implicit conversions
-      val x = false
-      val y = x || false //ok so this is the evildoer!
-
+    class C extends BooleanLMS {
+      //    type Rep[+T] = T
+      def main(): Any = {
+        //    boolDLMS {
+        //implicit def m(b: Boolean) = { x: Any => true } //any to boolean
+        //      implicit def m(b: Boolean) = new BL(b)
+        //      val xx = C(7)
+        val x: Rep[Boolean] = false
+        val y: Exp[Boolean] = x.||(false) //we need to make sure that a SourceContext is available here!
+        sys.error("RESULT: " + y )
+      }
     }
+    new C {}.main()
   }
 
   "Generic translation" should "work for val definitions" in {
