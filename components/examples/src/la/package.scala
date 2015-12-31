@@ -42,9 +42,9 @@ package object la {
         None, None,
         Map(
           "direct" -> false,
-          "virtualizeFunctions" -> true,
-          "virtualizeValDef" -> true,
-          "debug" -> 0,
+          "virtualizeFunctions" -> false,
+          "virtualizeValDef" -> false,
+          "debug" -> 3,
           "restrictLanguage" -> false,
           "ascribeTerms" -> false),
         None)(block)

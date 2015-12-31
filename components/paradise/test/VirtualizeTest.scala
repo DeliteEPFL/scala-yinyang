@@ -159,4 +159,23 @@ class VirtualizeSpec extends FlatSpec with ShouldMatchers with EmbeddedControls 
     virtualizeInstanceOf("hello") should be("hello")
     virtualizeInstanceOf(Nil) should be(null)
   }
+
+  //  "virtualization of case classes" should "not be supported" in {
+  //    intercept[java.lang.Throwable] {
+  //      @virtualize
+  //      case class CC(i: Int, s: String)
+  //    }
+  //  }
+
+  "virtualization of classes" should "be supported" in {
+    @virtualize
+    class C(val i: Int, s: String)
+  }
+  "virtualization of traits" should "be supported" in {
+    @virtualize
+    trait T {
+      def m: Int
+      val s = "ewagfsdx"
+    }
+  }
 }

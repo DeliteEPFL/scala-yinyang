@@ -340,7 +340,8 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
 
     q"""
     class ${TypeName(className)} extends $dslTrait {
-      //implicit val srcc:org.scala_lang.virtualized.SourceContext = srcc //will contain the outer sourcecontext
+//      implicit val srcc:_root_.org.scala_lang.virtualized.SourceContext = srcc
+//      implicit val src:org.scala_lang.virtualized.SourceContext = srcc
       def main() = {$transformedBody} //maybe: def apply?
     }
   """

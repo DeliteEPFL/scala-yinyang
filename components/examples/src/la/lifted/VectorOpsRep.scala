@@ -9,7 +9,6 @@ import scala.reflect.ClassTag
 import reflect.runtime.universe._
 import ch.epfl.yinyang.example._
 import scala.virtualization.lms.common.{ Base => _, _ } //YY also defines a Base trait
-import org.scala_lang.virtualized.SourceContext
 
 trait ClassTagOps extends PolymorphicBase {
   //  ClassTags posed a bit of a challenge: You want to keep the original
@@ -287,30 +286,28 @@ trait BooleanDSL extends PolymorphicBase {
 }
 
 trait BooleanLMS extends BooleanOpsExp with VariablesExp with PolymorphicBaseManifest with LiftBoolean { //use this and try to set: type Rep[T] = T
-  //  import org.scala_lang.virtualized.SourceContext
+  import org.scala_lang.virtualized.SourceContext
   //  implicit val scc = org.scala_lang.virtualized.SourceContext.m
-  //with the following it DOES work, WHY???
-  implicit class BooleanOps3(y: Rep[Boolean]) extends BooleanOps(y) {
-    def ||(rhs: Rep[Boolean])(implicit pos: SourceContext) = boolean_or(y, rhs)
+  //this works:
+  implicit class BooleanOps3(y: Rep[Boolean]) { //not even needed: extends BooleanOps(y) {
+    def ||(rhs: Rep[Boolean]) = BooleanOps(y).||(rhs)
   }
-  implicit def liftAll[T: Manifest] = new LiftAll[T] //
-  class LiftAll[T: Manifest] extends LiftEvidence[T, Rep[T]] {
-    def lift(v: T): Rep[T] = unit(v) //TODO: is this ok for lifting?
-    def hole(tpe: Manifest[T], symbolId: Int): Rep[T] = ??? //how to access holetable from here? or what else should we do?
+
+  //but this does not:
+  //  implicit def conv(x: Rep[Boolean]) = new BooleanOps(x)
+  //  implicit def liftAll[T: Manifest] = new LiftAll[T] //
+  //  class LiftAll[T: Manifest] extends LiftEvidence[T, Rep[T]] {
+  //    def lift(v: T): Rep[T] = unit(v) //TODO: is this ok for lifting?
+  //    def hole(tpe: Manifest[T], symbolId: Int): Rep[T] = ??? //how to access holetable from here? or what else should we do?
+  //  }
+  implicit object LiftUnit extends LiftEvidence[Unit, Rep[Unit]] {
+    def lift(v: Unit) = ???
+    def hole(tpe: Manifest[Unit], symbolId: Int): Rep[Unit] = ??? //how to access holetable from here? or what else should we do?
   }
-}
-
-//trait BooleanDSLLMS extends Base with BaseExp with BaseYinYangManifest with Reified
-//  with BooleanLMS {
-//  def generateCode(className: String): String = ??? // "45" //Base extends CodeGenerator
-//  //  def compile[T: TypeRep, Ret](unstableHoleIds: Set[Int]): Ret = ??? //not needed?
-//  def execute[T: Manifest](params: Any*) = ??? //true
-//}
-
-trait BooleanDSLYY extends BooleanDSL with Reified { //those traits need to be extended
-  //  def compile[T: TypeRep, Ret](unstableHoleIds: Set[Int]): Ret = ???
-  //def generateCode(className: String): String = ???
-  //  def execute[T: TypeTag](params: Any*) = ???
+  implicit object LiftBoolean extends LiftEvidence[Boolean, Rep[Boolean]] {
+    def lift(v: Boolean): Rep[Boolean] = ???
+    def hole(tpe: Manifest[Boolean], symbolId: Int): Rep[Boolean] = ???
+  }
 }
 
 trait MatchingOps extends PolymorphicBase {
