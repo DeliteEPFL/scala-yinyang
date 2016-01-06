@@ -285,12 +285,28 @@ trait BooleanDSL extends PolymorphicBase {
   }
 }
 
-trait BooleanLMS extends BooleanOpsExp with VariablesExp with PolymorphicBaseManifest with LiftBoolean { //use this and try to set: type Rep[T] = T
-  import org.scala_lang.virtualized.SourceContext
-  //  implicit val scc = org.scala_lang.virtualized.SourceContext.m
-  //this works:
-  implicit class BooleanOps3(y: Rep[Boolean]) { //not even needed: extends BooleanOps(y) {
-    def ||(rhs: Rep[Boolean]) = BooleanOps(y).||(rhs)
+trait BooleanLMS extends BooleanOpsExp with ListOpsExp with VariablesExp with PolymorphicBaseManifest with LiftBoolean { //use this and try to set: type Rep[T] = T
+  //  implicit def unWrap[T](r: Rep[T]) = r match {
+  //    case Const(x) => x
+  //    case _        => null.asInstanceOf[T]
+  //  }
+
+  //  import _root_.org.scala_lang.virtualized.SourceContext //this SourceContext is also fine
+  import org.scala_lang.virtualized.SourceContext //this is enough to have the macro in scope
+  //  def sc(implicit isc: SourceContext) = isc
+  //  implicit val vsc = sc
+  //  import org.scala_lang.virtualized.SourceContext._ //import object members
+  //  implicit val scc: SourceContext = SourceContext.m //does not even generate an implicit value conflict...
+  //  def x(implicit src: SourceC)
+  // if we use an implicit "forwarder" conversion it works
+  //  implicit class BooleanOps3(y: Rep[Boolean]) { //not even needed: extends BooleanOps(y) {
+  //    def ||(rhs: Rep[Boolean])(implicit pos: org.scala_lang.virtualized.SourceContext) = BooleanOps(y).||(rhs)
+  //  }
+
+  //to test the functionality we want to achieve
+  def test1() = {
+    val x: Rep[Boolean] = true
+    val y = x || x
   }
 
   //but this does not:
@@ -307,6 +323,16 @@ trait BooleanLMS extends BooleanOpsExp with VariablesExp with PolymorphicBaseMan
   implicit object LiftBoolean extends LiftEvidence[Boolean, Rep[Boolean]] {
     def lift(v: Boolean): Rep[Boolean] = ???
     def hole(tpe: Manifest[Boolean], symbolId: Int): Rep[Boolean] = ???
+  }
+}
+
+trait TestDSL extends BooleanLMS {
+  import org.scala_lang.virtualized.SourceContext
+  def main() = {
+    def m()(implicit s: SourceContext) = s
+    val sc = m()
+    val x: Rep[Boolean] = true
+    val y = x || x
   }
 }
 
@@ -329,6 +355,8 @@ trait VectorDSL
   extends ArrayDSL with IntDSL with DoubleDSL with ClassTagOps
   with NumericOps with Base with IfThenElseDSL
   with ScalaVirtualizationDSL with MatchingOps with Executable with Staged {
+
+  val vsc = 7
 
   def compile[T: TypeRep, Ret](unstableHoleIds: Set[Int]): Ret = ???
   def generateCode(className: String): String = ???

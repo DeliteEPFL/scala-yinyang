@@ -162,6 +162,7 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
           q"""
             $dsl //code wrapped in DSL class with name className
             new ${Ident(TypeName(className))}
+            //x.main() //.asInstanceOf[Boolean]
           """
         //c.abort(c.enclosingPosition, "DSL does not extend adequate traits!")
       }
@@ -329,20 +330,23 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
   def composeDSL(transformedBody: Tree): Tree = {
     import org.scala_lang.virtualized.SourceContext
     val srcc: org.scala_lang.virtualized.SourceContext = org.scala_lang.virtualized.SourceContext.m //this will have the WRONG sourcecontext information
-    implicit val lift = Liftable[SourceContext] { p =>
-      q"""new _root_.org.scala_lang.virtualized.SourceContext {
-         val fileName = ${p.fileName}
-         val methodName = ${p.methodName}
-         val receiver = ${p.receiver}
-         val bindings = ${p.bindings}
-         }"""
-    }
+    //    implicit val lift = Liftable[SourceContext] { p =>
+    //      q"""new _root_.org.scala_lang.virtualized.SourceContext {
+    //         val fileName = ${p.fileName}
+    //         val methodName = ${p.methodName}
+    //         val receiver = ${p.receiver}
+    //         val bindings = ${p.bindings}
+    //         }"""
+    //    }
 
     q"""
     class ${TypeName(className)} extends $dslTrait {
-//      implicit val srcc:_root_.org.scala_lang.virtualized.SourceContext = srcc
-//      implicit val src:org.scala_lang.virtualized.SourceContext = srcc
-      def main() = {$transformedBody} //maybe: def apply?
+//          import org.scala_lang.virtualized.SourceContext
+      def main() = {
+//        def m()(implicit s: SourceContext) = s
+//        val sc = m()
+        $transformedBody
+      }
     }
   """
   }

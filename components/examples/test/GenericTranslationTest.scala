@@ -49,23 +49,20 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
   //    }
   //  }
 
-  import org.scala_lang.virtualized.SourceContext
-  val srcc: SourceContext = SourceContext.m
-
   it should "be very deep" in {
     boolDLMS {
-      //      import _root_.org.scala_lang.virtualized.SourceContext._
-      //      implicit val scr: _root_.org.scala_lang.virtualized.SourceContext = _root_.org.scala_lang.virtualized.SourceContext.m
-      //      implicit val sc: org.scala_lang.virtualized.SourceContext = org.scala_lang.virtualized.SourceContext.m
-      val x = false
-      val y = x.||(false) //we need to make sure that a SourceContext is available here!
-      //      val z = x.&&(false)
+      import org.scala_lang.virtualized.SourceContext
+      def m()(implicit s: SourceContext) = s
+      val sc = m()
+      val x = true
+      val y = !x
+      //      val y = x || x
     }
   }
 
   "Generic translation" should "work for val definitions" in {
     intercept[NotImplementedError] {
-      val z = laDebug {
+      val z = la {
         val v = 1
         v
       }
