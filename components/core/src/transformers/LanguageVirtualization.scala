@@ -276,6 +276,9 @@ trait LanguageVirtualization extends MacroModule with TransformationUtils
         case ClassDef(mods, _, _, _) if mods.hasFlag(Flag.CASE) =>
           c.abort(tree.pos, "Virtualization of case classes is not supported.")
 
+        case ClassDef(mods, _, _, _) => //TODO: remove just for testing
+          tree
+
         case ClassDef(_, _, _, _) if restrictDefinitions =>
           c.abort(tree.pos, "Virtualization of classes and traits is not supported.")
 

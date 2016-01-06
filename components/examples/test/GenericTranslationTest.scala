@@ -51,12 +51,13 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
 
   it should "be very deep" in {
     boolDLMS {
-      import org.scala_lang.virtualized.SourceContext
-      def m()(implicit s: SourceContext) = s
-      val sc = m()
+      //      import org.scala_lang.virtualized.SourceContext //this will do the import with backticks
+      //      def m()(implicit s: SourceContext) = s //this will say that the SourceContext is not available probably because of the backticks
+      //      val sc = m() //this will be expanded during compile time
       val x = true
       val y = !x
-      //      val y = x || x
+      val z = x || x
+      //      val w = List(1, 2, 3)
     }
   }
 

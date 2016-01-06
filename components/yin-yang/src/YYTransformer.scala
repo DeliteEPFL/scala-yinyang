@@ -341,14 +341,14 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
 
     q"""
     class ${TypeName(className)} extends $dslTrait {
-//          import org.scala_lang.virtualized.SourceContext
+          import org.scala_lang.virtualized.SourceContext //this is the correct NON-backtick import
       def main() = {
-//        def m()(implicit s: SourceContext) = s
-//        val sc = m()
+        def m()(implicit s: SourceContext) = s
+        val sc = m() //resolves the implicit!
         $transformedBody
       }
     }
-  """
+    """
   }
 
   def injectImport(body: Tree): Tree = q"""
