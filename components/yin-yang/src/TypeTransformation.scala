@@ -14,7 +14,7 @@ trait TypeTreeTransformation extends MacroModule with TransformationUtils with D
     def apply(tree: Tree) = {
 
       val t = new TypeTreeTransformer().transform(tree)
-      log("typeTreeTransformed: " + code(t), 2)
+      log("typeTreeTransformed: " + showCode(t), 2)
       t
     }
   }

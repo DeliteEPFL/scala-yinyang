@@ -13,6 +13,8 @@ package object la {
   def boolD[T](block: => T): T = macro implementations.boolDeep[T]
   def intD[T](block: => T): T = macro implementations.intYY[T]
   def boolDLMS[T](block: => T): T = macro implementations.boolLMS[T]
+  def tupleDSL[T](block: => T): T = macro implementations.tupleDSL[T]
+  //  def numericDSL[T](block: => T): T = macro implementations.numericDSL[T]
   def typeOnly[T](block: => T): T = macro implementation.typeTranform[T]
 
   object implementations {
@@ -128,8 +130,27 @@ package object la {
           "ascribeTerms" -> false),
         None)(block)
     }
+
+    //def tupleDSL[T](c: Context)(block: c.Expr[T]): c.Expr[T] = createYY("tupleDSL")(c)(block)
+    def tupleDSL[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
+      YYTransformer[c.type, T](c)(
+        "dsl.la.rep.TupleDSL", //don't use version with Reify
+        new GenericTypeTransformer[c.type](c) {
+          override val IRType = "Rep"
+        },
+        None, None,
+        Map(
+          "direct" -> false,
+          "virtualizeFunctions" -> false,
+          "virtualizeValDef" -> false,
+          "debug" -> 3,
+          "restrictLanguage" -> false,
+          "ascribeTerms" -> false),
+        None)(block)
+    }
   }
 
+  //Try to factor out only the typer without all of YinYang was no success!
   object implementation { //extends scala.reflect.api.Trees
     //abstract
     class TTTransformer[C <: Context, T](val c: C) extends TypeTreeTransformation {

@@ -15,7 +15,7 @@ trait ScopeInjection extends MacroModule with TransformationUtils {
   object ScopeInjectionTransformer extends (Tree => Tree) {
     def apply(tree: Tree) = {
       val t = new ScopeInjectionTransformer().transform(tree)
-      log("scopeInjected: " + t, 2)
+      log("scopeInjected: " + showCode(t), 2)
       t
     }
   }
@@ -42,27 +42,11 @@ trait ScopeInjection extends MacroModule with TransformationUtils {
       ident += 1
 
       val result = tree match {
-        case Apply(Select(This(typeNames.EMPTY), TermName("lift")), _) =>
-          tree
-
-        case s @ Select(inn, name) if inn.symbol.isPackage && s.symbol.isModule =>
-          injectModule(s)
-
-        case Select(inn, name) if inn.symbol.isModule =>
+        case s @ Select(inn, name) if s.symbol.isMethod =>
           Select(transform(inn), name)
-
-        //Optimization: adds implicit arguments manually.
-        case MultipleTypeApply(lhs @ Select(inn, name), targs, argss
-          ) if !implicitTransformer.isEmpty &&
-          !(inn.symbol.isModule || isFunction(lhs.symbol)) =>
-          val newqqc = transform(inn)
-          val tlhs = if (inn.tpe != null)
-            implicitTransformer.map(trans => Select(trans(inn), name)) getOrElse lhs
-          else lhs
-          MultipleTypeApply(tlhs, targs, argss.map(_.map(transform)))
-
+        //        case s @ Select(inn, name) if inn.symbol.isPackage && s.symbol.isModule =>
+        //          injectModule(s)
         case _ => super.transform(tree)
-
       }
 
       ident -= 1

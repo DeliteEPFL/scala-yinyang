@@ -285,48 +285,28 @@ trait BooleanDSL extends PolymorphicBase {
   }
 }
 
-trait BooleanLMS extends BooleanOpsExp with ListOpsExp with VariablesExp with PolymorphicBaseManifest with LiftBoolean { //use this and try to set: type Rep[T] = T
-  //  implicit def unWrap[T](r: Rep[T]) = r match {
-  //    case Const(x) => x
-  //    case _        => null.asInstanceOf[T]
-  //  }
-
-  //  import _root_.org.scala_lang.virtualized.SourceContext //this SourceContext is also fine
-  import org.scala_lang.virtualized.SourceContext //this is enough to have the macro in scope
-  //  def sc(implicit isc: SourceContext) = isc
-  //  implicit val vsc = sc
-  //  import org.scala_lang.virtualized.SourceContext._ //import object members
-  //  implicit val scc: SourceContext = SourceContext.m //does not even generate an implicit value conflict...
-  //  def x(implicit src: SourceC)
-  // if we use an implicit "forwarder" conversion it works
-  //  implicit class BooleanOps3(y: Rep[Boolean]) { //not even needed: extends BooleanOps(y) {
-  //    def ||(rhs: Rep[Boolean])(implicit pos: org.scala_lang.virtualized.SourceContext) = BooleanOps(y).||(rhs)
-  //  }
-
-  //to test the functionality we want to achieve
-  def test1() = {
-    val x: Rep[Boolean] = true
-    val y = x || x
+trait LMSYY extends BaseExp with PolymorphicBaseManifest with VariablesExp { //with LiftAll { should not be needed if we use $lift instead!!
+  implicit def implicitLift[T: Manifest]: LiftEvidence[T, Rep[T]] = new PolyLift[T]
+  class PolyLift[T: Manifest] extends LiftEvidence[T, Rep[T]] {
+    def lift(v: T) = unit(v) //Const(v)
+    def hole(tpe: TypeRep[T], symbolId: Int): Rep[T] = ??? //how to access holetable from here? or what else should we do?
   }
 
-  //but this does not:
-  //  implicit def conv(x: Rep[Boolean]) = new BooleanOps(x)
-  //  implicit def liftAll[T: Manifest] = new LiftAll[T] //
-  //  class LiftAll[T: Manifest] extends LiftEvidence[T, Rep[T]] {
-  //    def lift(v: T): Rep[T] = unit(v) //TODO: is this ok for lifting?
-  //    def hole(tpe: Manifest[T], symbolId: Int): Rep[T] = ??? //how to access holetable from here? or what else should we do?
+}
+
+trait BooleanLMS extends LMSYY with BooleanOpsExp //we have to use OpsExp
+
+trait TupleDSL extends LMSYY with TupleOpsExp with ListOpsExp with NumericOpsExp with PrimitiveOpsExp with OrderingOpsExp {
+  //  implicit class ListOpsi[T: Manifest](r: Rep[List[T]]) {
+  //    def apply(i: Rep[Int]) = ???
   //  }
-  implicit object LiftUnit extends LiftEvidence[Unit, Rep[Unit]] {
-    def lift(v: Unit) = ???
-    def hole(tpe: Manifest[Unit], symbolId: Int): Rep[Unit] = ??? //how to access holetable from here? or what else should we do?
-  }
-  implicit object LiftBoolean extends LiftEvidence[Boolean, Rep[Boolean]] {
-    def lift(v: Boolean): Rep[Boolean] = ???
-    def hole(tpe: Manifest[Boolean], symbolId: Int): Rep[Boolean] = ???
+  implicit object LiftList extends LiftEvidence[List[Int], Rep[List[Int]]] {
+    def lift(v: List[Int]): Rep[List[Int]] = unit(v) //IntOpsOf(v)
+    def hole(tpe: TypeRep[List[Int]], symbolId: Int): Rep[List[Int]] = ???
   }
 }
 
-trait TestDSL extends BooleanLMS {
+trait TestDSL extends BooleanLMS with LiftBoolean {
   import org.scala_lang.virtualized.SourceContext
   def main() = {
     def m()(implicit s: SourceContext) = s

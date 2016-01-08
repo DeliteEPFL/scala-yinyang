@@ -341,10 +341,8 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
 
     q"""
     class ${TypeName(className)} extends $dslTrait {
-          import org.scala_lang.virtualized.SourceContext //this is the correct NON-backtick import
+      import org.scala_lang.virtualized.SourceContext //this is the correct NON-backtick import
       def main() = {
-        def m()(implicit s: SourceContext) = s
-        val sc = m() //resolves the implicit!
         $transformedBody
       }
     }
@@ -366,6 +364,7 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
           case q"ch.epfl.yinyang.shallow.`package`.$$lift[${ _ }]" => q"$$lift"
           case q"ch.epfl.yinyang.shallow.`package`.$$hole[${ _ }]" => q"$$hole"
           case q"ch.epfl.yinyang.shallow.`package`.$x" => Ident(x)
+          case q"`immutable.List`.apply[Int]($$lift(1), $$lift(2), $$lift(3))" => sys.error("DIEDIEIDE") //drop those backticks
           case Ident(x) => Ident(x)
           case _ => super.transform(tree)
         }
