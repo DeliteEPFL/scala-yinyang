@@ -1,6 +1,5 @@
 package collections
 
-import scala.collection.Set
 import scala.collection.mutable
 
 object HashMap {
@@ -23,7 +22,7 @@ class HashMap[K, V](hm: mutable.Map[K, V]) extends Iterable[(K, V)] {
 
   def clear(): Unit = inner.clear()
 
-  def keySet: Set[K] = inner.keySet
+  def keySet: collection.Set[K] = inner.keySet
 
   def keys: Iterable[K] = Iterable(inner.keys)
 

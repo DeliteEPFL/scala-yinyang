@@ -8,6 +8,7 @@ import scala.reflect.macros.blackbox.Context
 package object la {
 
   def la[T](block: => T): T = macro implementations.liftRep[T]
+  def boolDLMS[T](block: => T): T = macro implementations.boolLMS[T]
 
   object implementations {
     def liftRep[T](c: Context)(block: c.Expr[T]): c.Expr[T] =
@@ -24,5 +25,21 @@ package object la {
           "debug" -> 0,
           "featureAnalysing" -> false,
           "ascriptionTransforming" -> false))(block)
+
+    def boolLMS[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
+      YYTransformer[c.type, T](c)(
+        "dsl.la.rep.BooleanLMS", //don't use version with Reify
+        new GenericTypeTransformer[c.type](c) {
+          override val IRType = "Rep"
+        },
+        None, None,
+        Map(
+          "shallow" -> false,
+          "virtualizeFunctions" -> false,
+          "virtualizeVal" -> false,
+          "debug" -> 100,
+          //          "restrictLanguage" -> false,
+          "ascriptionTransforming" -> false))(block)
+    }
   }
 }

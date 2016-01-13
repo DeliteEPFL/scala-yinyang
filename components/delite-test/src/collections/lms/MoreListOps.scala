@@ -2,11 +2,11 @@ package collections.lms
 
 import java.io.PrintWriter
 
-import scala.collection.mutable.HashMap
+import java.util.HashMap
 
 import scala.language.implicitConversions
 
-import scala.reflect.SourceContext
+import org.scala_lang.virtualized.SourceContext
 
 import scala.virtualization.lms.common.{
   ListOps,
@@ -19,7 +19,7 @@ import scala.virtualization.lms.common.{
 trait MoreListOps extends ListOps {
 
   implicit def varToMoreListOps[T: Manifest](x: Var[List[T]]) =
-    new MoreListOpsCls(__readVar(x))
+    new MoreListOpsCls(readVar(x))
   implicit def repToMoreListOps[T: Manifest](a: Rep[List[T]]) =
     new MoreListOpsCls(a)
   implicit def listToListMoreOps[T: Manifest](a: List[T]) =

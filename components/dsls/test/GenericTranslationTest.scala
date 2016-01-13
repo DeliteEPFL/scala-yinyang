@@ -104,4 +104,58 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
     }
   }
 
+  it should "work with booleans" in {
+    boolDLMS {
+      val x = true
+      val y = !x
+      val z = x && x
+    }
+  }
+
+  it should "work with integers" in {
+    boolDLMS {
+      val x = 3
+      val y = 4
+      val z = x + y
+      val w = 5 + y
+    }
+  }
+
+  //    it should "work with tuples" in {
+  //      boolDLMS {
+  //        val i = 1
+  //        val x = "edfsc"
+  //        val z = 3.2
+  //        val a = (x, i, z)
+  //        val b = a._2
+  //        val c = (a._1, a._3)
+  //      }
+  //    }
+
+  it should "not break implicits" in {
+    boolDLMS {
+      implicit class C1(i: Int) {
+        def okok() = i * i;
+      }
+      class C2(val i: Int) {
+        def c2() = i * i * i;
+      }
+      implicit def conv(i: Int) = new { //anonymous class
+        def c2() = i
+      }
+      val i = 4
+      i.okok()
+      i.c2()
+    }
+  }
+
+  //  it should "work with scala collections" in {
+  //    boolDLMS {
+  //      val f = scala.collection.immutable.List(1, 2, 3, 4)
+  //      val g = f(2) //SeqOps!
+  //      val g2 = f.head
+  //      val j = f.tail
+  //      val h = f.map[Int](_ + 1) //SeqOps?
+  //    }
+  //  }
 }

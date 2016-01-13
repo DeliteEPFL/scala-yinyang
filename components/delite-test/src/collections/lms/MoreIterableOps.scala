@@ -2,11 +2,11 @@ package collections.lms
 
 import java.io.PrintWriter
 
-import scala.collection.mutable.HashMap
+import java.util.HashMap
 
 import scala.language.implicitConversions
 
-import scala.reflect.SourceContext
+import org.scala_lang.virtualized.SourceContext
 
 import scala.virtualization.lms.common.{
   IterableOps,
@@ -18,7 +18,7 @@ import scala.virtualization.lms.common.{
 trait MoreIterableOps extends IterableOps {
 
   implicit def varToMoreIterableOps[A: Manifest](x: Var[Iterable[A]]) =
-    new MoreIterableOpsCls(__readVar(x))
+    new MoreIterableOpsCls(readVar(x))
   implicit def repIterableToMoreIterableOps[T: Manifest](a: Rep[Iterable[T]]) =
     new MoreIterableOpsCls(a)
   implicit def iterableToMoreIterableOps[T: Manifest](a: Iterable[T]) =
@@ -48,7 +48,8 @@ trait MoreIterableOpsExp extends MoreIterableOps with IterableOpsExp {
     (e match {
       case ita @ IterableToList(xs) => iterable_toList(f(xs))(ita.m, pos)
       case Reflect(ita @ IterableToList(xs), u, es) =>
-        reflectMirrored(Reflect(IterableToList(f(xs))(ita.m), mapOver(f, u), f(es)))(mtype(manifest[A]))
+        implicit val mmm = mtype(manifest[A])
+        reflectMirrored(Reflect(IterableToList(f(xs))(ita.m), mapOver(f, u), f(es)))
       case _ => super.mirror(e, f)
     }).asInstanceOf[Exp[A]] // why??
   }

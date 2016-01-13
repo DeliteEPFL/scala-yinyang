@@ -2,7 +2,7 @@ package collections.lms
 
 import scala.collection.mutable
 
-import scala.reflect.SourceContext
+import org.scala_lang.virtualized.SourceContext
 
 import scala.virtualization.lms.common.{ BlockExp, FunctionsExp, ScalaGenFunctions }
 import scala.virtualization.lms.util.ClosureCompare

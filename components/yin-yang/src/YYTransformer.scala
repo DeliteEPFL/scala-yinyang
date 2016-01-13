@@ -224,6 +224,17 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
                   ${programId}, cache, compilVars)
                 program.apply(..${sortedHoles})
               """
+            case _ =>
+              log(s"MY TESTING!! ${showCode(dsl)}", 2)
+              val retType = deepDealias(block.tree.tpe)
+              println(s"DSLNAME: $dslName")
+              println(s"CLASSNAME: $className")
+              q"""
+                $dsl //code wrapped in DSL class with name className
+                new ${Ident(TypeName(className))}
+                //x.main() //.asInstanceOf[Boolean]
+              """
+            //c.abort(c.enclosingPosition, "DSL does not extend adequate traits!")
             // TODO(vsalvis) How do optional variables interact with interpretation?
             // FIXME: this is not tested! Types probably wrong
             // case t if t <:< typeOf[Interpreted] => q"""
@@ -354,8 +365,8 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
         composeDSL(Nil)(Block(
           methodSet.map(x => application(x)).toList,
           Literal(Constant(()))))), Literal(Constant(())))
-      log(s"Block: ${show(block)})", 3)
-      log(s"Block raw: ${showRaw(block)})", 3)
+      println("cedric: show code:")
+      log(s"Block raw: ${showCode(block)})", 3)
       c.typecheck(block)
       true
     } catch {
@@ -407,8 +418,11 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
   def composeDSL(compilVars: List[Symbol])(transformedBody: Tree): Tree = q"""
     class ${TypeName(className)} extends $dslTrait {
       ..${compilVars.map(k => q"var ${TermName("captured$" + k.name.decodedName.toString)} = $k")}
-      def main(): Any = {$transformedBody}
+
+      implicit val sc:org.scala_lang.virtualized.SourceContext = null //SourceContext.m
+      def main(): Any = {
+          $transformedBody
+        }
     }
   """
-
 }

@@ -4,7 +4,7 @@ import java.io.PrintWriter
 
 import scala.language.implicitConversions
 
-import scala.reflect.SourceContext
+import org.scala_lang.virtualized.SourceContext
 
 import scala.virtualization.lms.common.{ ScalaGenBase, ScalaGenEffect, BaseExp, Base }
 

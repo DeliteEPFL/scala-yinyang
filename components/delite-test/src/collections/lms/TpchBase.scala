@@ -1,7 +1,7 @@
 package collections.lms
 
 import scala.virtualization.lms.common._
-
+import org.scala_lang.virtualized.SourceContext
 import collections.lms.TpchData._
 
 /** Base class for the TPC-H benchmark query Q12 test. */
@@ -17,7 +17,7 @@ abstract class TpchBase
   with MoreIterableOpsExp
   with MoreListOpsExpOpt
   with MoreTupleOpsExp
-  with NumericOpsExpOpt
+  with NumericOpsExpOpt with PrimitiveOpsExp //??
   with StringOpsExp
   with CompileScala { self =>
 

@@ -1,7 +1,7 @@
 package collections.lms
 
-import scala.collection.mutable.HashMap
-
+import java.util.HashMap
+import org.scala_lang.virtualized.SourceContext
 import scala.virtualization.lms.common._
 
 /** Base class for the Mnemonics test. */
@@ -18,6 +18,7 @@ abstract class MnemonicsBase
   with MoreIterableOpsExp
   with MoreListOpsExpOpt
   with MoreTupleOpsExp
+  with PrimitiveOpsExp
   with NumericOpsExpOpt
   with RangeOpsExp
   with SeqOpsExp

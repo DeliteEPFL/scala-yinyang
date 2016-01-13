@@ -2,11 +2,11 @@ package collections.lms
 
 import java.io.PrintWriter
 
-import scala.collection.mutable.{ HashMap /*, Set*/ }
+import java.util.HashMap
 
 import scala.language.implicitConversions
 
-import scala.reflect.SourceContext
+import org.scala_lang.virtualized.SourceContext
 
 import scala.virtualization.lms.common.{
   HashMapOps,

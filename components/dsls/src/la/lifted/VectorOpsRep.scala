@@ -274,6 +274,52 @@ trait BooleanDSL extends RepBase {
   }
 }
 
+import scala.virtualization.lms.common.{ Base => _, _ } //Base already exists
+trait LMSYY extends BaseExp with BaseYinYangManifest with VariablesExp { //with LiftAll { should not be needed if we use $lift instead!!
+  implicit def implicitLift[T: Manifest]: LiftEvidence[T, Rep[T]] = new PolyLift[T]
+  class PolyLift[T: Manifest] extends LiftEvidence[T, Rep[T]] {
+    def lift(v: T) = unit(v) //Const(v)
+    def hole(tpe: TypeRep[T], symbolId: Int): Rep[T] = ??? //how to access holetable from here? or what else should we do?
+  }
+  def compilationVars(symbols: List[Symbol]): List[VarType] = Nil
+}
+
+trait BooleanLMS extends LMSYY with BooleanOpsExp with PrimitiveOpsExp with ImplicitOpsExp with ListOpsExp with SeqOpsExp //we have to use OpsExp
+
+//trait TupleDSL extends LMSYY with TupleOpsExp with ListOpsExp with NumericOpsExp with PrimitiveOpsExp with OrderingOpsExp {
+//  //  implicit class ListOpsi[T: Manifest](r: Rep[List[T]]) {
+//  //    def apply(i: Rep[Int]) = ???
+//  //  }
+//  implicit object LiftList extends LiftEvidence[List[Int], Rep[List[Int]]] {
+//    def lift(v: List[Int]): Rep[List[Int]] = unit(v) //IntOpsOf(v)
+//    def hole(tpe: TypeRep[List[Int]], symbolId: Int): Rep[List[Int]] = ???
+//  }
+//}
+//
+trait TestDSL extends BooleanLMS with LiftBoolean with LiftNumeric {
+  import org.scala_lang.virtualized.SourceContext
+  def main() = {
+    def m()(implicit s: SourceContext) = s
+    val sc = m()
+    val x: Rep[Boolean] = true
+    val y = x || x
+    val a = List(1, 2, 3)
+    val b = a(1)
+
+    val i = 4
+    implicit def conv(i: Int) = new { def xx() = i }
+    i.xx()
+    implicit def c(r: Rep[Int]) = new { def a() = r + r }
+    val r: Rep[Int] = i
+    r.a()
+
+    //    val a1: Rep[Tuple3[Boolean, Int, Boolean]] = (x, 4, y)
+    //    val b1 = a1._2
+    //    val c1 = (a1._1, a1._3)
+  }
+
+}
+
 trait IfThenElseDSL extends RepBase with BooleanDSL {
   def __ifThenElse[T](c: => R[Boolean], t: R[T], e: R[T]) = ???
 }

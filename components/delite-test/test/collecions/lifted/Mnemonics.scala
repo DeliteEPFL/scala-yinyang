@@ -1,7 +1,8 @@
 package collections.lms
 
-import scala.collection.mutable.HashMap
-
+import java.util.HashMap
+import org.scala_lang.virtualized.SourceContext
+import org.scala_lang.virtualized.virtualize
 import scala.virtualization.lms.common._
 
 /**
@@ -51,6 +52,7 @@ object Mnemonics extends MnemonicsBase {
       (words groupBy wordCode)
 
     /** Return all ways to encode a number as a list of words */
+    @virtualize
     def encode: Rep[LString => List[List[LString]]] = doLambda { number =>
       if (number.isEmpty)
         List(List())

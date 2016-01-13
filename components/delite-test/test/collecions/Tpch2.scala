@@ -1,6 +1,7 @@
 package collections.lms
 
 import scala.virtualization.lms.common._
+import org.scala_lang.virtualized.SourceContext
 import scala.reflect.Manifest
 
 object LMSTPCH extends TpchBase with ScalaOpsPkgExp {
@@ -73,35 +74,40 @@ object LMSTPCH extends TpchBase with ScalaOpsPkgExp {
    * See http://www.tpc.org/tpch/spec/tpch2.15.0.pdf for more
    * information on this particular TPC-H query.
    */
-  def query12(
-    orders: Rep[List[OrdersRow]],
-    lineitem: Rep[List[LineitemRow]],
-    shipmode1: Rep[String],
-    shipmode2: Rep[String],
-    date: Rep[Date]): Rep[List[(String, Int, Int)]] = {
-
-    val m = orders flatMap {
-      o => lineitem map ((o, _)) // Cross join of `orders` with `lineitem`
-    } filter { p => // Filter on "where" conditions
-      (p._1._1 == p._2._1) && // o_orderkey = l_orderkey
-        ((p._2._15 == shipmode1) || // and l_shipmode in ('[SHIPMODE1]', '[SHIPMODE2]')
-          (p._2._15 == shipmode2)) &&
-          (p._2._12 < p._2._13) && // and l_commitdate  <  l_receiptdate
-          (p._2._11 < p._2._12) && // and l_shipdate    <  l_commitdate
-          (p._2._13 >= p._2._13) && // and l_receiptdate >= date '[DATE]'
-          (p._2._13 < p._2._13 + (1, 0, 0)) // and l_receiptdate <  date '[DATE]' + interval '1' year
-    } map { p => // Select `l_shipmode` and case expressions in sums
-      val b = ((p._1._6 == "1-URGENT") || (p._1._6 == "2-HIGH"))
-      (p._2._15, if (b) 1 else 0, if (!b) 1 else 0)
-    } groupBy ((_._1)) // Group by `l_shipmode`
-
-    // Iterate over the key of the grouped rows and compute the sums
-    (m.keys.toList map { k: Rep[String] =>
-      m(k).foldLeft((k, unit(0), unit(0))) { (acc, row) =>
-        (acc._1, acc._2 + row._2, acc._3 + row._3)
-      }
-    }) sortBy ((_._1)) // Sort by `l_shipmode`
-  }
+  //  def query12(
+  //    orders: Rep[List[OrdersRow]],
+  //    lineitem: Rep[List[LineitemRow]],
+  //    shipmode1: Rep[String],
+  //    shipmode2: Rep[String],
+  //    date: Rep[Date]): Rep[List[(String, Int, Int)]] = {
+  //
+  //    val m = orders flatMap {
+  //      o => lineitem map ((o, _)) // Cross join of `orders` with `lineitem`
+  //    } filter { p => // Filter on "where" conditions
+  //      ((p._1._1 == p._2._1) && // o_orderkey = l_orderkey
+  //        ((p._2._15 == shipmode1) || // and l_shipmode in ('[SHIPMODE1]', '[SHIPMODE2]')
+  //          (p._2._15 == shipmode2)) &&
+  //          (p._2._12
+  //            <
+  //            p._2._13)
+  //            && // and l_commitdate  <  l_receiptdate
+  //            (p._2._11 < p._2._12) && // and l_shipdate    <  l_commitdate
+  //            (p._2._13 >= p._2._13) && // and l_receiptdate >= date '[DATE]'
+  //            (p._2._13 < p._2._13 + (1, 0, 0))) // and l_receiptdate <  date '[DATE]' + interval '1' year
+  //    } map { p => // Select `l_shipmode` and case expressions in sums
+  //      val b = ((p._1._6 == "1-URGENT") || (p._1._6 == "2-HIGH"))
+  //      (p._2._15, if (b) 1 else 0, if (!b) 1 else 0)
+  //    } groupBy ((_._1)) // Group by `l_shipmode`
+  //
+  //    // Iterate over the key of the grouped rows and compute the sums
+  //    (m.keys.toList map { k: Rep[String] =>
+  //      m(k).foldLeft((k, unit(0), unit(0))) {
+  //        (acc, row) =>
+  //          (acc._1, acc._2 + row._2,
+  //            acc._3 + row._3)
+  //      }
+  //    }) sortBy ((_._1)) // Sort by `l_shipmode`
+  //  }
 
   /**
    * TODO: Implement the "Shipping Modes and Order Priority Query"
@@ -205,20 +211,20 @@ object LMSTPCH extends TpchBase with ScalaOpsPkgExp {
    * See http://www.tpc.org/tpch/spec/tpch2.15.0.pdf for more
    * information on this particular TPC-H query.
    */
-  def query4(
-    orders: Rep[List[OrdersRow]],
-    lineitem: Rep[List[LineitemRow]],
-    shipmode1: Rep[String],
-    shipmode2: Rep[String],
-    date: Rep[Date]): Rep[List[(String, Int)]] = {
-
-    var m = orders filter {
-      o =>
-        o._5 >= date && o._5 < date + (0, 3, 0) &&
-          !((lineitem filter (l => l._1 == o._1 && l._12 < l._13)).isEmpty)
-    } map (o => o._6) groupBy (e => e)
-    m.keys.toList map (k => (k, (m(k).length))) sortBy ((_._1))
-  }
+  //  def query4(
+  //    orders: Rep[List[OrdersRow]],
+  //    lineitem: Rep[List[LineitemRow]],
+  //    shipmode1: Rep[String],
+  //    shipmode2: Rep[String],
+  //    date: Rep[Date]): Rep[List[(String, Int)]] = {
+  //
+  //    var m = orders filter {
+  //      o =>
+  //        o._5 >= date && o._5 < date + (0, 3, 0) &&
+  //          !((lineitem filter (l => l._1 == o._1 && l._12 < l._13)).isEmpty)
+  //    } map (o => o._6) groupBy (e => e)
+  //    m.keys.toList map (k => (k, (m(k).length))) sortBy ((_._1))
+  //  }
 
   /**
    * TODO: Implement the "Shipping Modes and Order Priority Query"
@@ -263,5 +269,5 @@ object LMSTPCH extends TpchBase with ScalaOpsPkgExp {
     lineitem: Rep[List[LineitemRow]],
     shipmode1: Rep[String],
     shipmode2: Rep[String],
-    date: Rep[Date]): Rep[List[(String, Int, Int)]] = query12(orders, lineitem, shipmode1, shipmode2, date)
+    date: Rep[Date]): Rep[List[(String, Int, Int)]] = null //TODO query12(orders, lineitem, shipmode1, shipmode2, date)
 }

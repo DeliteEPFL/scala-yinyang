@@ -1,5 +1,5 @@
 package collections.lms
-
+import org.scala_lang.virtualized.SourceContext
 import scala.virtualization.lms.common._
 
 /** An object representing the TPC-H benchmark query Q12. */
@@ -37,7 +37,7 @@ object Tpch extends TpchBase {
   String) // _16: L_COMMENT
 
   /**
-   * TODO: Implement the "Shipping Modes and Order Priority Query"
+   * TODO: Implement the "Shipping ModLMSTPCHes and Order Priority Query"
    * (Q12) from the TPC-H Benchmark:
    *
    * {{{
@@ -81,26 +81,28 @@ object Tpch extends TpchBase {
     shipmode2: Rep[String],
     date: Rep[Date]): Rep[List[(String, Int, Int)]] = {
 
-    val m = orders flatMap {
-      o => lineitem map ((o, _)) // Cross join of `orders` with `lineitem`
-    } filter { p => // Filter on "where" conditions
-      (p._1._1 == p._2._1) && // o_orderkey = l_orderkey
-        ((p._2._15 == shipmode1) || // and l_shipmode in ('[SHIPMODE1]', '[SHIPMODE2]')
-          (p._2._15 == shipmode2)) &&
-          (p._2._12 < p._2._13) && // and l_commitdate  <  l_receiptdate
-          (p._2._11 < p._2._12) && // and l_shipdate    <  l_commitdate
-          (p._2._13 >= p._2._13) && // and l_receiptdate >= date '[DATE]'
-          (p._2._13 < p._2._13 + (1, 0, 0)) // and l_receiptdate <  date '[DATE]' + interval '1' year
-    } map { p => // Select `l_shipmode` and case expressions in sums
-      val b = ((p._1._6 == "1-URGENT") || (p._1._6 == "2-HIGH"))
-      (p._2._15, if (b) 1 else 0, if (!b) 1 else 0)
-    } groupBy ((_._1)) // Group by `l_shipmode`
+    //    val m = orders flatMap {
+    //      o => lineitem map ((o, _)) // Cross join of `orders` with `lineitem`
+    //    } filter { p => // Filter on "where" conditions
+    //      (p._1._1 == p._2._1) && // o_orderkey = l_orderkey
+    //        ((p._2._15 == shipmode1) || // and l_shipmode in ('[SHIPMODE1]', '[SHIPMODE2]')
+    //          (p._2._15 == shipmode2)) &&
+    //          (p._2._12 < p._2._13) && // and l_commitdate  <  l_receiptdate
+    //          (p._2._11 < p._2._12) && // and l_shipdate    <  l_commitdate
+    //          (p._2._13 >= p._2._13) && // and l_receiptdate >= date '[DATE]'
+    //          (p._2._13 < p._2._13 + (1, 0, 0)) // and l_receiptdate <  date '[DATE]' + interval '1' year
+    //    } map { p => // Select `l_shipmode` and case expressions in sums
+    //      val b = ((p._1._6 == "1-URGENT") || (p._1._6 == "2-HIGH"))
+    //      (p._2._15, if (b) 1 else 0, if (!b) 1 else 0)
+    //    } groupBy ((_._1)) // Group by `l_shipmode`
+    //
+    //    // Iterate over the key of the grouped rows and compute the sums
+    //    (m.keys.toList map { k: Rep[String] =>
+    //      m(k).foldLeft((k, unit(0), unit(0))) { (acc, row) =>
+    //        (acc._1, acc._2 + row._2, acc._3 + row._3)
+    //      }
+    //    }) sortBy ((_._1)) // Sort by `l_shipmode`
 
-    // Iterate over the key of the grouped rows and compute the sums
-    (m.keys.toList map { k: Rep[String] =>
-      m(k).foldLeft((k, unit(0), unit(0))) { (acc, row) =>
-        (acc._1, acc._2 + row._2, acc._3 + row._3)
-      }
-    }) sortBy ((_._1)) // Sort by `l_shipmode`
+    return null;
   }
 }

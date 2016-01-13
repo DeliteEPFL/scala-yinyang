@@ -3,6 +3,7 @@ package lifted
 import scala.virtualization.lms.common._
 import scala.virtualization.lms.internal.ScalaCompile
 import scala.virtualization.lms.util.OverloadHack
+import org.scala_lang.virtualized.SourceContext
 import ch.epfl.yinyang.api._
 import scala.tools.nsc._
 import scala.tools.nsc.util._
@@ -13,11 +14,11 @@ import java.io._
 
 trait LMSYinYang extends BaseYinYang with BaseExp { self =>
   case class Hole[+T: Manifest](symId: Long) extends Def[T]
-
-  implicit def liftAny[T: Manifest]: LiftEvidence[T, Rep[T]] =
+  type TypeRep[T] = Manifest[T]
+  implicit def liftAny[T: TypeRep]: LiftEvidence[T, Rep[T]] =
     new LiftEvidence[T, Rep[T]] {
       def lift(v: T): Rep[T] = unit(v)
-      def hole(m: Manifest[Any], symId: Int): Rep[T] = toAtom(Hole(symId))
+      def hole(m: TypeRep[T], symId: Int): Rep[T] = toAtom(Hole(symId))
     }
 
   def requiredHoles = Nil
@@ -57,7 +58,7 @@ trait ScalaDSL extends ScalaOpsPkg with ScalaOpsPkgExp with LMSYinYang with Code
   /*
    * Ret must be Nothing* => T. If I was only smarter to make this work without a convention :/
    */
-  def compile[T: TypeTag, Ret] = {
+  def compile[T: Manifest, Ret] = {
 
     if (this.compiler eq null)
       setupCompiler()
@@ -85,7 +86,7 @@ trait ScalaDSL extends ScalaOpsPkg with ScalaOpsPkgExp with LMSYinYang with Code
     cls.getConstructor().newInstance().asInstanceOf[Ret]
   }
 
-  def interpret[T: TypeTag](params: Nothing*): T = {
+  def interpret[T: Manifest](params: Nothing*): T = {
     params.length match {
       case 0 =>
         compile[T, () => T].apply
@@ -99,68 +100,68 @@ trait ScalaDSL extends ScalaOpsPkg with ScalaOpsPkgExp with LMSYinYang with Code
 
 }
 
-import ppl.dsl.optiml._
-
-trait OptiML extends OptiMLApplicationRunner with LMSYinYang with Interpreted {
-  def mainDelite(): Any
-
-  override def main(): Unit = ???
-
-  def interpret[T: Manifest](params: Any*) = 0.asInstanceOf[T]
-
-  type Boolean = scala.Boolean
-  type Int = scala.Int
-  type Unit = scala.Unit
-  type Nothing = scala.Nothing
-  type Any = scala.Any
-}
-
-import ppl.dsl.optigraph._
-
-abstract class OptiGraph extends OptiGraphApplicationRunner with LMSYinYang with Interpreted {
-  def mainDelite(): Any
-
-  override def main(): Unit = ???
-
-  def interpret[T: Manifest](params: Any*) = 0.asInstanceOf[T]
-
-  /* This rewireing is special for OptiGraph since it keeps the
-  Types locked in the Jar.*/
-  type Long = scala.Long
-  type Int = scala.Int
-  type Float = scala.Float
-  type Double = scala.Double
-  type Boolean = scala.Boolean
-  type String = Predef.String
-  type Unit = scala.Unit
-  type Nothing = scala.Nothing
-  type Any = scala.Any
-  type Array[T] = scala.Array[T]
-
-  type Graph = ppl.dsl.optigraph.Graph
-  type Node = ppl.dsl.optigraph.Node
-  type Edge = ppl.dsl.optigraph.Edge
-  type GSet[T] = ppl.dsl.optigraph.GSet[T]
-  type GSeq[T] = ppl.dsl.optigraph.GSeq[T]
-  type GOrder[T] = ppl.dsl.optigraph.GOrder[T]
-  type GIterable[T] = ppl.dsl.optigraph.GIterable[T]
-  type Deferrable[T] = ppl.dsl.optigraph.Deferrable[T]
-  type Reduceable[T] = ppl.dsl.optigraph.Reduceable[T]
-  type NodeProperty[T] = ppl.dsl.optigraph.NodeProperty[T]
-  type EdgeProperty[T] = ppl.dsl.optigraph.EdgeProperty[T]
-
-  implicit def fixClosureContravariance[T](v: Rep[shallow.optigraph.Node] => Rep[T]) =
-    v.asInstanceOf[Rep[ppl.dsl.optigraph.Node] => Rep[T]]
-
-  implicit def fixOverloaded(x: Rep[Overloaded1]) = null.asInstanceOf[Overloaded1]
-  override implicit def repNodeToNodeOps(n: Rep[Node]) = new NodeOpsCls(n)
-  implicit val ManifestFactory = scala.reflect.ManifestFactory
-  implicit val IntIsIntegral = scala.math.Numeric.IntIsIntegral
-  object Numeric {
-    val IntIsIntegral = scala.math.Numeric.IntIsIntegral
-    val DoubleIsFractional = scala.math.Numeric.DoubleIsFractional
-  }
-  val DoubleIsFractional = scala.math.Numeric.DoubleIsFractional
-
-  object Overloaded1 extends Overloaded1
-}
+//import ppl.dsl.optiml._
+//
+//trait OptiML extends OptiMLApplicationRunner with LMSYinYang with Interpreted {
+//  def mainDelite(): Any
+//
+//  override def main(): Unit = ???
+//
+//  def interpret[T: Manifest](params: Any*) = 0.asInstanceOf[T]
+//
+//  type Boolean = scala.Boolean
+//  type Int = scala.Int
+//  type Unit = scala.Unit
+//  type Nothing = scala.Nothing
+//  type Any = scala.Any
+//}
+//
+//import ppl.dsl.optigraph._
+//
+//abstract class OptiGraph extends OptiGraphApplicationRunner with LMSYinYang with Interpreted {
+//  def mainDelite(): Any
+//
+//  override def main(): Unit = ???
+//
+//  def interpret[T: Manifest](params: Any*) = 0.asInstanceOf[T]
+//
+//  /* This rewireing is special for OptiGraph since it keeps the
+//  Types locked in the Jar.*/
+//  type Long = scala.Long
+//  type Int = scala.Int
+//  type Float = scala.Float
+//  type Double = scala.Double
+//  type Boolean = scala.Boolean
+//  type String = Predef.String
+//  type Unit = scala.Unit
+//  type Nothing = scala.Nothing
+//  type Any = scala.Any
+//  type Array[T] = scala.Array[T]
+//
+//  type Graph = ppl.dsl.optigraph.Graph
+//  type Node = ppl.dsl.optigraph.Node
+//  type Edge = ppl.dsl.optigraph.Edge
+//  type GSet[T] = ppl.dsl.optigraph.GSet[T]
+//  type GSeq[T] = ppl.dsl.optigraph.GSeq[T]
+//  type GOrder[T] = ppl.dsl.optigraph.GOrder[T]
+//  type GIterable[T] = ppl.dsl.optigraph.GIterable[T]
+//  type Deferrable[T] = ppl.dsl.optigraph.Deferrable[T]
+//  type Reduceable[T] = ppl.dsl.optigraph.Reduceable[T]
+//  type NodeProperty[T] = ppl.dsl.optigraph.NodeProperty[T]
+//  type EdgeProperty[T] = ppl.dsl.optigraph.EdgeProperty[T]
+//
+//  implicit def fixClosureContravariance[T](v: Rep[shallow.optigraph.Node] => Rep[T]) =
+//    v.asInstanceOf[Rep[ppl.dsl.optigraph.Node] => Rep[T]]
+//
+//  implicit def fixOverloaded(x: Rep[Overloaded1]) = null.asInstanceOf[Overloaded1]
+//  override implicit def repNodeToNodeOps(n: Rep[Node]) = new NodeOpsCls(n)
+//  implicit val ManifestFactory = scala.reflect.ManifestFactory
+//  implicit val IntIsIntegral = scala.math.Numeric.IntIsIntegral
+//  object Numeric {
+//    val IntIsIntegral = scala.math.Numeric.IntIsIntegral
+//    val DoubleIsFractional = scala.math.Numeric.DoubleIsFractional
+//  }
+//  val DoubleIsFractional = scala.math.Numeric.DoubleIsFractional
+//
+//  object Overloaded1 extends Overloaded1
+//}

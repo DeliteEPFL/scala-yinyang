@@ -1,5 +1,7 @@
 package collections
 
+import org.scala_lang.virtualized.SourceContext
+
 object YYMnemonics {
   /** A type representing strings as lists of characters. */
   type LString = List[Char]
