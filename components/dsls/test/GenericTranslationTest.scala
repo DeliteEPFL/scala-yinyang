@@ -121,65 +121,65 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
     }
   }
 
-    it should "work with tuples" in {
+      it should "work with tuples" in {
+        intercept[Throwable] {
+          boolDLMS {
+            val i = 1
+            val x = "edfsc"
+            val z = 3.2
+            val a = (x, i, z)
+            val b = a._2
+            val c = (a._1, a._3)
+          }
+        }
+      }
+
+    it should "not break implicit classes" in {
       intercept[Throwable] {
         boolDLMS {
-          val i = 1
-          val x = "edfsc"
-          val z = 3.2
-          val a = (x, i, z)
-          val b = a._2
-          val c = (a._1, a._3)
+          implicit class C1(i: Int) {
+            def okok() = i * i;
+          }
+          val i = 4
+          i.okok()
         }
       }
     }
 
-  it should "not break implicit classes" in {
-    intercept[Throwable] {
+    it should "not break implicit methods" in {
+      intercept[NotImplementedError] {
+        boolDLMS {
+          class C2(val i: Int) {
+            def c2() = i * i * i;
+          }
+          implicit def conv(i: Int) = new {
+            //anonymous class
+            def c2() = i
+          }
+          val i = 4
+          i.c2()
+        }
+      }
+    }
+
+    implicit class C(i: Int) {
+      def x() = i
+    }
+
+    it should "work with backed in implicits?" in {
       boolDLMS {
-        implicit class C1(i: Int) {
-          def okok() = i * i;
-        }
-        val i = 4
-        i.okok()
+        val i = 1
+        i.x()
       }
     }
-  }
 
-  it should "not break implicit methods" in {
-    intercept[NotImplementedError] {
-      boolDLMS {
-        class C2(val i: Int) {
-          def c2() = i * i * i;
-        }
-        implicit def conv(i: Int) = new {
-          //anonymous class
-          def c2() = i
-        }
-        val i = 4
-        i.c2()
-      }
-    }
-  }
-
-  implicit class C(i: Int) {
-    def x() = i
-  }
-
-  it should "work with backed in implicits?" in {
+  it should "work with scala collections" in {
     boolDLMS {
-      val i = 1
-      i.x()
+      val f = scala.collection.immutable.List(1, 2, 3, 4)
+      val g = f(2) //SeqOps!
+      val g2 = f.head
+      val j = f.tail
+      val h = f.map(_ + 1) //works if use map[Int]
     }
   }
-
-  //  it should "work with scala collections" in {
-  //    boolDLMS {
-  //      val f = scala.collection.immutable.List(1, 2, 3, 4)
-  //      val g = f(2) //SeqOps!
-  //      val g2 = f.head
-  //      val j = f.tail
-  //      val h = f.map[Int](_ + 1) //SeqOps?
-  //    }
-  //  }
 }

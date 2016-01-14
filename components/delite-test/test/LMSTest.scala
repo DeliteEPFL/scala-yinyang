@@ -8,20 +8,20 @@ import shallow.optigraph._
 @RunWith(classOf[JUnitRunner])
 class OptiMLSpec extends FlatSpec with ShouldMatchers {
 
-  "A basic OptiML test should" should "rewire" in {
-    val y = 1
-    val x: Int = optiML {
-      val x = y
-      val b = true
-      val c = b && true
-
-      if (b) x + y + x + y + x else x + y + x + y + x
-
-      val z = 1 + x
-      val k = z + 1
-      k
-    }
-  }
+  //  "A basic OptiML test should" should "rewire" in {
+  //    val y = 1
+  //    val x: Int = optiML {
+  //      val x = y
+  //      val b = true
+  //      val c = b && true
+  //
+  //      if (b) x + y + x + y + x else x + y + x + y + x
+  //
+  //      val z = 1 + x
+  //      val k = z + 1
+  //      k
+  //    }
+  //  }
 
 }
 //
