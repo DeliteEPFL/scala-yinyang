@@ -284,7 +284,12 @@ trait LMSYY extends BaseExp with BaseYinYangManifest with VariablesExp { //with 
   def compilationVars(symbols: List[Symbol]): List[VarType] = Nil
 }
 
-trait BooleanLMS extends LMSYY with BooleanOpsExp with PrimitiveOpsExp with ImplicitOpsExp with ListOpsExp with SeqOpsExp //we have to use OpsExp
+trait BooleanLMS extends LMSYY with BooleanOpsExp with PrimitiveOpsExp with ImplicitOpsExp with ListOpsExp with SeqOpsExp {
+  //we have to use OpsExp
+  implicit class C(i: Rep[Int]) {
+    def x() = i
+  }
+}
 
 //trait TupleDSL extends LMSYY with TupleOpsExp with ListOpsExp with NumericOpsExp with PrimitiveOpsExp with OrderingOpsExp {
 //  //  implicit class ListOpsi[T: Manifest](r: Rep[List[T]]) {
