@@ -217,13 +217,15 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
 
           val guardedExecute = dslType match {
             case t if t <:< typeOf[CodeGenerator] =>
-              q"""
+              val ret = q"""
                 val cache = ${c parse YYCacheString}
                 val compilVars: scala.Array[Any] = scala.Array(..$compilVars)
                 val program = ch.epfl.yinyang.runtime.YYStorage.guardedLookup[${functionType}](
                   ${programId}, cache, compilVars)
                 program.apply(..${sortedHoles})
               """
+              //              log(s"cedric printout\n ${showCode(ret)}", 3)
+              ret
             case _ =>
               log(s"MY TESTING!! ${showCode(dsl)}", 2)
               val retType = deepDealias(block.tree.tpe)
@@ -249,9 +251,10 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
           Block(List(dsl), guardedExecute)
       }
 
-      log(s"Final tree: ${showRaw(c.untypecheck(dslTree))}", 3)
-      log(s"Final untyped: ${show(c.untypecheck(dslTree), printTypes = true)}", 3)
-      log(s"Final typed: ${show(c.typecheck(c.untypecheck(dslTree)), printTypes = true)}\n")
+      //      log(s"Final tree: ${showRaw(c.untypecheck(dslTree))}", 3)
+      //      log(s"Final untyped: ${show(c.untypecheck(dslTree), printTypes = true)}", 3)
+      //      log(s"Final typed: ${show(c.typecheck(c.untypecheck(dslTree)), printTypes = true)}\n")
+      log(s"Cedric final: ${showCode(c.untypecheck(dslTree))}", 2)
       log("-------- YYTransformer DONE ----------\n\n", 2)
       c.Expr[T](c.untypecheck(dslTree))
     }

@@ -48,7 +48,7 @@ object YinYangBuild extends Build {
   lazy val yy_paradise   = Project(id = "yinyang-paradise", base = file("components/paradise") , settings = defaults ++ paradise ++ Seq(name := "yinyang-paradise")) dependsOn(yy_core)
   lazy val yinyang       = Project(id = "scala-yinyang",    base = file("components/yin-yang") , settings = defaults ++ Seq(name := "scala-yinyang")) dependsOn(yy_core)  
   lazy val example_dsls  = Project(id = "example-dsls",     base = file("components/dsls")     , settings = defaults ++ Seq(publishArtifact := false)) dependsOn(yinyang)
-  lazy val delite        = Project(id = "delite-test",      base = file("components/delite-test"),settings = defaults ++ paradise ++ Seq(name := "delite-test")) dependsOn(yinyang) //, yy_core, yy_paradise, example_dsls)
+  //lazy val delite        = Project(id = "delite-test",      base = file("components/delite-test"),settings = defaults ++ paradise ++ Seq(name := "delite-test")) dependsOn(yinyang) //, yy_core, yy_paradise, example_dsls)
 
   lazy val defaults = projectSettings ++ scalaSettings ++ formatSettings ++ libraryDeps ++ Seq(
     resolvers +=  "OSSH" at "https://oss.sonatype.org/content/groups/public",

@@ -8,6 +8,7 @@ import scala.reflect.macros.blackbox.Context
 package object la {
 
   def la[T](block: => T): T = macro implementations.liftRep[T]
+  def laDebug[T](block: => T): T = macro implementations.liftDebug[T]
   def boolDLMS[T](block: => T): T = macro implementations.boolLMS[T]
 
   object implementations {
@@ -26,6 +27,21 @@ package object la {
           "featureAnalysing" -> false,
           "ascriptionTransforming" -> false))(block)
 
+    def liftDebug[T](c: Context)(block: c.Expr[T]): c.Expr[T] =
+      YYTransformer[c.type, T](c)(
+        "dsl.la.rep.VectorDSL",
+        new GenericTypeTransformer[c.type](c) {
+          override val IRType = "R"
+        },
+        None, None,
+        Map(
+          "shallow" -> false,
+          "virtualizeFunctions" -> true,
+          "virtualizeVal" -> true,
+          "debug" -> 4,
+          "featureAnalysing" -> false,
+          "ascriptionTransforming" -> false))(block)
+
     def boolLMS[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
       YYTransformer[c.type, T](c)(
         "dsl.la.rep.BooleanLMS", //don't use version with Reify
@@ -37,7 +53,7 @@ package object la {
           "shallow" -> false,
           "virtualizeFunctions" -> false,
           "virtualizeVal" -> false,
-          "debug" -> 100,
+          "debug" -> 4,
           //          "restrictLanguage" -> false,
           "ascriptionTransforming" -> false))(block)
     }
