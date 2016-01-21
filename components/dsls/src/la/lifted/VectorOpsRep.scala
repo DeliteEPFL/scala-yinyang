@@ -296,17 +296,15 @@ trait LMSYY extends BaseExp with BaseYinYangManifest with VariablesExp with Code
   def interpret[T: TypeRep](params: Any*): T = ???
 }
 
-trait BooleanLMS extends LMSYY with BooleanOpsExp with PrimitiveOpsExp with ImplicitOpsExp with ListOpsExp with TupleOpsExp with SeqOpsExp with CodeGenerator with FullyStaged with RecordOps {
-  implicit def repTo[T: Manifest](a: Rep[CI]) = new CIOpsCls(a)
+trait BooleanLMS extends LMSYY with BooleanOpsExp with PrimitiveOpsExp with ImplicitOpsExp with ListOpsExp with TupleOpsExp with SeqOpsExp with CodeGenerator with HashMapOpsExp with FullyStaged with RecordOps {
+  //  implicit def repTo[T: Manifest](a: Rep[CI]) = new CIOpsCls(a)
   object Complex {
     def apply(i: Rep[Int], j: Rep[Int]): Rep[Complex] = ???
   }
-  trait Complex {}
+  type Complex = dsl.la.Complex
   implicit class ComplexOps(c: Rep[Complex]) {
     def conv(rhs: Rep[Complex]): Rep[Complex] = ???
-  }
-  class CIOpsCls(i: Rep[CI]) {
-    def x() = i
+    def blop(rhs: Rep[Complex]): Rep[Int] = ???
   }
 }
 
@@ -330,8 +328,23 @@ trait TestDSL extends BooleanLMS with LiftBoolean with LiftNumeric {
     val a = List(1, 2, 3)
     val b = a(1)
 
+    val rec = Record(test = unit("rsdagf")) //this is how it should work!
+
     val lll: Rep[List[Int]] = List(unit(1), unit(2), unit(3), unit(4));
     //    val r2 = Record(i = unit(34), s = unit("sdf"))
+
+    //TODO: why does this even work???
+    type A = Int
+    type B = Rep[A];
+    type C = Rep[B];
+    val i0: Rep[A] = unit(7)
+    //    //    val i00: Rep[Int] = unit(unit(7))
+    //    val i000: Rep[Rep[Int]] = unit(7)
+    //    //    val ii = i000 * i000 //fails!
+    //
+    val i1: C = unit(7)
+    val i2: Rep[B] = unit(4);
+    //    val i3 = (i0 * i1) + i2; //this obviously doesn't work
 
     val i = 4
     implicit def conv(i: Int) = new { def xx() = i }

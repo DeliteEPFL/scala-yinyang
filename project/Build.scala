@@ -38,7 +38,8 @@ object YinYangBuild extends Build {
       scalaOrg % "scala-compiler" % ver,
       "org.scalatest" % "scalatest_2.11" % "2.1.5" % "test",
       "junit" % "junit" % "4.11" % "test",
-      "EPFL" % "macro-lms_2.11" % "1.0.0-wip-macro" //, //local lms published
+      "EPFL" % "macro-lms_2.11" % "1.0.0-wip-macro", //local lms published
+      "ch.epfl.lamp" %% "scala-records" % "0.1-cedric"
       // "org.scala-lang.virtualized" %% "scala-virtualized" % "1.0.0-macrovirt" //is this 
   )))
 
