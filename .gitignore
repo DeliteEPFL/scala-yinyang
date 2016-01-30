@@ -1,3 +1,4 @@
+*.iml
 target
 .cache
 .classpath

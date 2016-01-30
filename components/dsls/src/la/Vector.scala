@@ -4,19 +4,6 @@ import scala.reflect.ClassTag
 import collection.mutable.{ ListBuffer, WrappedArray }
 import scala.collection.mutable.WrappedArray
 
-//object Complex {
-//  def apply(i: Int, j: Int): Complex = ??? //object Complex {def apply(i:rep[Int], j:Rep[Int]) is in trait BooleanLMS
-//}
-//trait Complex { //mpde.vector.test
-//  def conv(c: Complex): Complex = ???
-//  def blop(c: Complex): Int = ???
-//}
-//a case class can simulate both the trait and the object.apply
-case class Complex(i: Int, j: Int) { //mpde.vector.test
-  def conv(c: Complex): Complex = ???
-  def blop(c: Complex): Int = ???
-}
-
 object Vector {
   def apply[T: Numeric](v: T*): Vector[T] = ??? //type Numeric is also overwritten by VectorDSL
 }

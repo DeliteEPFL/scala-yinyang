@@ -1,132 +1,113 @@
 package mpde.vector.test
 
-import dsl.la.rep.VectorDSL
+import dsl.lms._
 import org.scalatest._
-import dsl.la._ //TODO:carefull, this also includes Vector[T] !!
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import reflect.runtime.universe._
 import java.io.{ PrintStream, ByteArrayOutputStream }
 
-import scala.virtualization.lms.common._
-
 @RunWith(classOf[JUnitRunner])
-class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
-  "Generic translation" should "work for val definitions" in {
+class LMSTest extends FlatSpec with ShouldMatchers {
+
+  //LMS TESTS
+
+  //simple types work
+
+  //Booleans work
+  it should "work with booleans" in {
     intercept[NotImplementedError] {
-      la {
-        val v = 1
-        v
+      lms {
+        val x = true
+        val y = !x
+        val z = x && x
       }
     }
   }
 
-  it should "work for vars" in {
+  //integers work
+  it should "work with integers" in {
     intercept[NotImplementedError] {
-      la {
-        var v = 1
-        v = 2
-        v
+      lms {
+        val x = 3 //test
+        val y = 4
+        val z = x + y
+        val w = 5 + y
       }
     }
   }
 
-  it should "work for lambdas" in {
+  //TODO why doesn this work?
+  it should "nested Rep's ??? " in {
     intercept[NotImplementedError] {
-      la {
-        val id = (x: Int) => x
-        id
+      lms {
+        type A = Int //will be Rep[Int]
+        type B = A //will be Rep[A] = Rep[Rep[Int]] ???
+        type C = B //will be Rep[B] = Rep[Rep[Rep[Int]]] ???
+        //        type R[T] = T
+        val c: C = 7
+        val b: B = 4
+        val cc: B = (c * b) + 3
       }
     }
   }
 
-  it should "work for application" in {
+  it should "work on primitiveOps " in {
     intercept[NotImplementedError] {
-      la {
-        val id = (x: Int) => x
-        id(1)
+      primitiveDsl {
+        val x = 3 + 9
+        val s = "segrf"
+        val d = 6.0 * 8
       }
     }
   }
-
-  it should "work for all types of application" in {
-    intercept[NotImplementedError] {
-      la {
-        val id0 = () => 1
-        val id1 = (x: Int) => x
-        val id2 = (x: Int, y: Int) => x + y
-        id0()
-        id1(1)
-        id2(1, 2)
-      }
-    }
-  }
-
-  it should "work for AnyRef functions" in {
-    intercept[NotImplementedError] {
-      la {
-        val id0 = 1
-        val hash = 1.hashCode
-        val hash2 = 2.hashCode
-        hash != hash2
-      }
-    }
-  }
-
-  it should "work for locally defined functions" in {
-    intercept[NotImplementedError] {
-      val x: Int = la {
-        def id[T](x: T): T = x
-        def id2[T, U <: AnyRef](p1: T, p2: U): Unit = ()
-        id2[Int, String](1, "string")
-        id[Int](1)
-      }
-    }
-  }
-
-  it should "work for type aliases" in {
-    intercept[NotImplementedError] {
-      la {
-        println("hello")
-        type X = Int
-        type Y = dsl.la.Vector[X]
-        val x: Y = dsl.la.Vector(1, 2, 3)
-        val ys = x dotProduct x
-        val yp = x(1) * x(2)
-
-        val z: dsl.la.Vector[Int] = dsl.la.Vector(1, 2, 3)
-        val zz = z(1) * z(2)
-        val w = dsl.la.Vector(1, 2, 3)
-      }
-    }
-  }
-
-  it should "interesting wrapping of VectorOps" in {
-    //    intercept[NotImplementedError] { //TODO why does this not throw a NotImplementedError
-    trait T extends VectorDSL {
-      type R[+T] = T
-      def m() =
-        laDebug {
-          val x = this.Vector(1, 2, 3)
-          val ys = x dotProduct x
-          val yp = x(1) * x(2)
+  it should "work on primitiveOps " in {
+    trait T extends dsl.lms.rep.VectorOps {
+      type Rep[T] = T
+      intercept[NotImplementedError] {
+        vectorDsl {
+          val v0 = Vector[Int](4)
+          val v1 = Vector[Int](3)
+          val v2 = v0 + v1
         }
-      val a = m()
-    }
-    //    }
-  }
-
-  it should "work with captured variables" in {
-    val captured = 1
-    val captured1 = 2
-    val captured2 = 3
-    intercept[NotImplementedError] {
-      la {
-        val x: Int = captured + captured1 + captured2
-        x + 1
       }
     }
   }
+
+  // records tests:
+
+  //  // use scala-records: problem: inner macro gets expanded before YY
+  //  it should "record test with scala-records" in {
+  //    import records._ //use scala Records in shallow!
+  //    intercept[NotImplementedError] {
+  //      lmsDebug {
+  //        val r = Record(h = 5)
+  //      }
+  //    }
+  //  }
+  //
+  //  // use Dynamic, problem: result is not typed and applyDynamicNamed(UNIT("apply"))(v: (String, Any)*)
+  //  object Record extends Dynamic {
+  //    def applyDynamicNamed(method: String)(v: (String, Any)*): Any = ??? //
+  //  }
+  //  it should "record test with Dynamic " in {
+  //    intercept[NotImplementedError] {
+  //      lmsDebug {
+  //        val r = Record(h = 5)
+  //      }
+  //    }
+  //  }
+  //
+  //  it should "record test with RecordOps and Rep[T]=T" in {
+  //    intercept[NotImplementedError] {
+  //      trait T extends RecordOps {
+  //        type Rep[T] = T
+  //        lmsDebug {
+  //          val r = Record(h = 5)
+  //        }
+  //      }
+  //    }
+  //  }
 
   //  //tuples don't work
   //  it should "work with tuples" in {
