@@ -7,6 +7,8 @@ import org.scalatest.junit.JUnitRunner
 import reflect.runtime.universe._
 import java.io.{ PrintStream, ByteArrayOutputStream }
 
+import scala.virtualization.lms.common.RecordOps
+
 @RunWith(classOf[JUnitRunner])
 class LMSTest extends FlatSpec with ShouldMatchers {
 
@@ -61,18 +63,27 @@ class LMSTest extends FlatSpec with ShouldMatchers {
       }
     }
   }
-  it should "work on primitiveOps " in {
-    trait T extends dsl.lms.rep.VectorOps {
-      type Rep[T] = T
-      intercept[NotImplementedError] {
-        vectorDsl {
-          val v0 = Vector[Int](4)
-          val v1 = Vector[Int](3)
-          val v2 = v0 + v1
-        }
-      }
-    }
-  }
+
+  //  trait T extends dsl.lms.rep.VectorOpsExp {
+  //    val v0: T.this.Rep[T.this.Vector[Int]] = T.this.Vector.apply[Int](4)(scala.reflect.ManifestFactory.Int);
+  //    val v1: T.this.Rep[T.this.Vector[Int]] = T.this.Vector.apply[Int](3)(scala.reflect.ManifestFactory.Int);
+  //    val v2: T.this.Rep[T.this.Vector[Int]] = T.this.VectorOpsCls[Int](v0)(scala.reflect.ManifestFactory.Int).+(v1);
+  //  }
+  //
+  //println("TEST: " + new T {}.v2)
+  //this doesn't work because YinYang will also wrap Manifests!
+  //  it should "work on primitiveOps " in {
+  //    trait TT extends dsl.lms.rep.VectorOps {
+  //      type Rep[T] = T
+  //      intercept[NotImplementedError] {
+  //        vectorDsl {
+  //          val v0 = Vector[Int](4)
+  //          val v1 = Vector[Int](3)
+  //          val v2 = v0 + v1
+  //        }
+  //      }
+  //    }
+  //  }
 
   // records tests:
 
@@ -86,14 +97,23 @@ class LMSTest extends FlatSpec with ShouldMatchers {
   //    }
   //  }
   //
-  //  // use Dynamic, problem: result is not typed and applyDynamicNamed(UNIT("apply"))(v: (String, Any)*)
-  //  object Record extends Dynamic {
-  //    def applyDynamicNamed(method: String)(v: (String, Any)*): Any = ??? //
+  // use Dynamic, problem: result is not typed and applyDynamicNamed(UNIT("apply"))(v: (String, Any)*)
+  import scala.language.dynamics
+  object Record extends Dynamic {
+    def applyDynamicNamed(method: String)(v: (String, Any)*): Any = ??? //
+  }
+  //  object Record {
+  //    def apply(h: Int) = ???
   //  }
+  //  class Test extends RecordOps {
+  //    val r = Record(h = 5)
+  //  }
+
   //  it should "record test with Dynamic " in {
   //    intercept[NotImplementedError] {
   //      lmsDebug {
   //        val r = Record(h = 5)
+  //        //val r = Record(h = 5)
   //      }
   //    }
   //  }
@@ -166,28 +186,32 @@ class LMSTest extends FlatSpec with ShouldMatchers {
   //    }
   //  }
   //
-  //  it should "should work with scala collection" in {
-  //    intercept[NotImplementedError] {
-  //      boolDLMS {
-  //        val l: List[Int] = scala.collection.immutable.List(1, 2, 3, 4)
-  //        val a = l(1)
-  //        val i = l.length
-  //        //        val m = l.map(_ + 1)
-  //      }
-  //    }
-  //  }
-  //
+  it should "should work with scala collection" in {
+    intercept[NotImplementedError] {
+      lmsDebug {
+        val l: List[Int] = scala.collection.immutable.List(1, 2, 3, 4)
+        val a = l(1)
+        val i = l.length
+        val h = l.head
+        //        val m = l.map(_ => "string")
+      }
+    }
+  }
 
-  //  it should "work with complex numbers" in {
-  //    intercept[NotImplementedError] {
-  //      boolDLMS {
-  //        val c = dsl.la.Complex(1, 2)
-  //        val x = c conv c
-  //        val y = c blop c
-  //      }
-  //    }
-  //  }
-  //
+  it should "work with complex numbers" in {
+    intercept[NotImplementedError] {
+      implicit val i = 9
+      lms {
+        val c = dsl.lms.Complex(1, 2)
+        val x = c conv c
+        val y = c blop c
+        //        val bb = c.mani("Hello")
+        //        val cc = c.implVal(23.34)
+        //        val aa = c.impli(3)
+      }
+    }
+  }
+
   //  it should "not break implicit methods" in {
   //    intercept[NotImplementedError] {
   //      boolDLMS {

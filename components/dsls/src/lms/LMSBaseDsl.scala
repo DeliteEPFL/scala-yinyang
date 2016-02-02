@@ -14,15 +14,18 @@ package dsl.lms
 case class Complex(i: Int, j: Int) { //mpde.vector.test
   def conv(c: Complex): Complex = ???
   def blop(c: Complex): Int = ???
+  def impli(i: Int)(implicit j: Int): Int = i
+  def mani[A: Manifest](a: A) = ???
+  def implVal[A](a: A)(implicit m: Manifest[A]) = ???
 }
 
 case class Vector[T](length: Int) {
-//  def +(y: Vector[A]) = vectorPlus(x, y)
-//  //    def +(y: Rep[A])(implicit n: Numeric[A], o: Overloaded1) = vectorPlusScalar(x, y)
-//  def *(y: Rep[A]) = scalarTimes(x, y)
-//  def sum = vectorSum(x)
-//  def filter(pred: Rep[A] => Rep[Boolean]) = vectorFilter(x, pred)
-//  def length = vectorLength(x)
-//  def apply(idx: Rep[Int]) = vectorApply(x, idx)
-//  def pprint = vectorPrint(x)
+  //    def +(y: Vector[A]) = vectorPlus(x, y)
+  //  //    def +(y: Rep[A])(implicit n: Numeric[A], o: Overloaded1) = vectorPlusScalar(x, y)
+  //  def *(y: Rep[A]) = scalarTimes(x, y)
+  //  def sum = vectorSum(x)
+  //  def filter(pred: Rep[A] => Rep[Boolean]) = vectorFilter(x, pred)
+  //  def length = vectorLength(x)
+  //  def apply(idx: Rep[Int]) = vectorApply(x, idx)
+  //  def pprint = vectorPrint(x)
 }

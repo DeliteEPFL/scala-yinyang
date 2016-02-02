@@ -15,11 +15,11 @@ import java.io._
 trait LMSYinYang extends BaseYinYang with BaseExp { self =>
   case class Hole[+T: Manifest](symId: Long) extends Def[T]
   type TypeRep[T] = Manifest[T]
-  implicit def liftAny[T: TypeRep]: LiftEvidence[T, Rep[T]] =
-    new LiftEvidence[T, Rep[T]] {
-      def lift(v: T): Rep[T] = unit(v)
-      def hole(m: TypeRep[T], symId: Int): Rep[T] = toAtom(Hole(symId))
-    }
+//  /*implicit*/ def liftAny[T: TypeRep]: LiftEvidence[T, Rep[T]] =
+//    new LiftEvidence[T, Rep[T]] {
+//      def lift(v: T): Rep[T] = unit(v)
+//      def hole(m: TypeRep[T], symId: Int): Rep[T] = toAtom(Hole(symId))
+//    }
 
   def requiredHoles = Nil
 }

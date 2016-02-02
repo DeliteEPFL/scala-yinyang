@@ -368,8 +368,8 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
         composeDSL(Nil)(Block(
           methodSet.map(x => application(x)).toList,
           Literal(Constant(()))))), Literal(Constant(())))
-      println("cedric: show code:")
-      log(s"Block raw: ${showCode(block)})", 3)
+      log("cedric: show code:", 3)
+      log(s"Block code: ${showCode(block)})", 3)
       c.typecheck(block)
       true
     } catch {
@@ -377,7 +377,6 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
         log("Feature not working!!!" + e, 2)
         false
     }
-
     res
   }
 

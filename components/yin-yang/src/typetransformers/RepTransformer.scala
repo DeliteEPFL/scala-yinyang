@@ -29,8 +29,10 @@ trait RepTransformerLike[C <: Context] extends PolyTransformerLike[C] { this: Ty
     val universe = c.universe.asInstanceOf[scala.reflect.internal.Types]
 
     ctx match {
+
       case TypeArgCtx | TypeParameterCtx =>
         TypeTree(inType)
+
       case OtherCtx =>
         inType match {
           case inType if isFunctionType(inType) =>
@@ -39,7 +41,7 @@ trait RepTransformerLike[C <: Context] extends PolyTransformerLike[C] { this: Ty
             //we can't construnct baseTree using TypeTree(pre) - pre is only scala.type not FunctionN
             //val baseTree = TypeTree(pre) //pre = scala.type
             //using such baseTree we get val a: scala.type[Rep[Int], Rep[Int]] = ...
-            val baseTree = Select(Ident(newTermName("scala")), sym.name)
+            val baseTree = Select(Ident(TermName("scala")), sym.name)
             AppliedTypeTree(baseTree, retTyperees)
 
           case SingleType(pre, name) if inType.typeSymbol.isClass && (!inType.typeSymbol.isModuleClass) =>

@@ -31,7 +31,6 @@ trait TypeTreeTransformation extends MacroModule with TransformationUtils with D
     }
 
     override def transform(tree: Tree): Tree = {
-
       log(s"$ident::> $tree", 3)
       ident += " "
       val result = tree match {

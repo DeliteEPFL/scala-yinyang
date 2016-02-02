@@ -86,11 +86,15 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
 
   it should "work for type aliases" in {
     intercept[NotImplementedError] {
-      la {
+      laDebug {
         println("hello")
         type X = Int
         type Y = dsl.la.Vector[X]
         val x: Y = dsl.la.Vector(1, 2, 3)
+
+        implicit val a = 78
+        val needsImplicit = x.xxx(34)
+
         val ys = x dotProduct x
         val yp = x(1) * x(2)
 
@@ -101,20 +105,21 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
     }
   }
 
-  it should "interesting wrapping of VectorOps" in {
-    //    intercept[NotImplementedError] { //TODO why does this not throw a NotImplementedError
-    trait T extends VectorDSL {
-      type R[+T] = T
-      def m() =
-        laDebug {
-          val x = this.Vector(1, 2, 3)
-          val ys = x dotProduct x
-          val yp = x(1) * x(2)
-        }
-      val a = m()
-    }
-    //    }
-  }
+  //  it should "interesting wrapping of VectorOps" in {
+  //    //    intercept[NotImplementedError] { //TODO why does this not throw a NotImplementedError
+  //    trait T extends VectorDSL {
+  //      type R[+T] = T
+  //      def m() =
+  //        laDebug {
+  //          val x = Vector(1, 2, 3)
+  //          val z = x.xxx(34)
+  //          val ys = x dotProduct x
+  //          val yp = x(1) * x(2)
+  //        }
+  //      val a = m()
+  //    }
+  //    //    }
+  //  }
 
   it should "work with captured variables" in {
     val captured = 1
@@ -185,43 +190,7 @@ class GenericTranslationSpec extends FlatSpec with ShouldMatchers {
   //    }
   //  }
   //
-  //  it should "should work with scala collection" in {
-  //    intercept[NotImplementedError] {
-  //      boolDLMS {
-  //        val l: List[Int] = scala.collection.immutable.List(1, 2, 3, 4)
-  //        val a = l(1)
-  //        val i = l.length
-  //        //        val m = l.map(_ + 1)
-  //      }
-  //    }
-  //  }
-  //
 
-  //  it should "work with complex numbers" in {
-  //    intercept[NotImplementedError] {
-  //      boolDLMS {
-  //        val c = dsl.la.Complex(1, 2)
-  //        val x = c conv c
-  //        val y = c blop c
-  //      }
-  //    }
-  //  }
-  //
-  //  it should "not break implicit methods" in {
-  //    intercept[NotImplementedError] {
-  //      boolDLMS {
-  //        class C2(val i: Int) {
-  //          def c2() = i * i * i;
-  //        }
-  //        implicit def conv(i: Int) = new {
-  //          //anonymous class
-  //          def c2() = i
-  //        }
-  //        val i = 4
-  //        i.c2()
-  //      }
-  //    }
-  //  }
   //
   //  implicit class C(i: Int) {
   //    def x() = i

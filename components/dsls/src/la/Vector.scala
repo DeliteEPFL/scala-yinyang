@@ -23,6 +23,7 @@ trait Vector[T] {
   def negate: Vector[T]
   //method without parameters which should return Scala standart type
   def length: Double
+  def xxx(x: Int)(implicit m: Manifest[Int]) = "hello" + m
 
   def dotProduct(v: Vector[T]): T
 

@@ -1,6 +1,9 @@
 package ch.epfl.yinyang
 package annotation
 
+//import org.scala_lang.virtualized.virtualize
+// these tests also work with scala_lang_virtualize !
+
 import org.scalatest.{ FlatSpec, ShouldMatchers }
 
 class VirtualizeSpec extends FlatSpec with ShouldMatchers with EmbeddedControls {

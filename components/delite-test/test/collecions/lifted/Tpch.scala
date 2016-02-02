@@ -37,7 +37,7 @@ object Tpch extends TpchBase {
   String) // _16: L_COMMENT
 
   /**
-   * TODO: Implement the "Shipping ModLMSTPCHes and Order Priority Query"
+   * TODO: Implement the "Shipping Modes and Order Priority Query"
    * (Q12) from the TPC-H Benchmark:
    *
    * {{{

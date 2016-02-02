@@ -41,7 +41,7 @@ package object lms {
           "shallow" -> false,
           "virtualizeFunctions" -> false,
           "virtualizeVal" -> false,
-          "debug" -> 3,
+          "debug" -> 4,
           //          "restrictLanguage" -> false,
           "ascriptionTransforming" -> false))(block)
     }
@@ -73,7 +73,7 @@ package object lms {
           "shallow" -> false,
           "virtualizeFunctions" -> false,
           "virtualizeVal" -> false,
-          "debug" -> 3,
+          "debug" -> 4,
           //          "restrictLanguage" -> false,
           "ascriptionTransforming" -> false))(block)
     }

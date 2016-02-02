@@ -318,50 +318,6 @@ trait BooleanDSL extends RepBase {
 //  }
 //}
 //
-//trait TestDSL extends BooleanLMS with LiftBoolean with LiftNumeric {
-//  import org.scala_lang.virtualized.SourceContext //to get the implicit SourceContext
-//  def main() = {
-//    def m()(implicit s: SourceContext) = s
-//    val sc = m()
-//    val x: Rep[Boolean] = true
-//    val y = x || x
-//    val a = List(1, 2, 3)
-//    val b = a(1)
-//
-//    val rec = Record(test = unit("rsdagf")) //this is how it should work!
-//
-//    val lll: Rep[List[Int]] = List(unit(1), unit(2), unit(3), unit(4));
-//    //    val r2 = Record(i = unit(34), s = unit("sdf"))
-//
-//    //TODO: why does this even work???
-//    type A = Int
-//    type B = Rep[A];
-//    type C = Rep[B];
-//    val i0: Rep[A] = unit(7)
-//    //    //    val i00: Rep[Int] = unit(unit(7))
-//    //    val i000: Rep[Rep[Int]] = unit(7)
-//    //    //    val ii = i000 * i000 //fails!
-//    //
-//    val i1: C = unit(7)
-//    val i2: Rep[B] = unit(4);
-//    //    val i3 = (i0 * i1) + i2; //this obviously doesn't work
-//
-//    val i = 4
-//    implicit def conv(i: Int) = new { def xx() = i }
-//    i.xx()
-//    implicit def c(r: Rep[Int]) = new { def a() = r + r }
-//    val r: Rep[Int] = i
-//    r.a()
-//
-//    val tup: Rep[(Int, Boolean)] = (unit(2), unit(true))
-//    val t1 = tup._1
-//
-//    //    val a1: Rep[Tuple3[Boolean, Int, Boolean]] = (x, 4, y)
-//    //    val b1 = a1._2
-//    //    val c1 = (a1._1, a1._3)
-//  }
-//
-//}
 
 trait IfThenElseDSL extends RepBase with BooleanDSL {
   def __ifThenElse[T](c: => R[Boolean], t: R[T], e: R[T]) = ???
@@ -380,12 +336,19 @@ trait VectorDSL
   object Vector {
     def apply[T: Numeric](v: R[T]*): R[Vector[T]] = ???
   }
+
+  import scala.reflect.ManifestFactory
+  val ManifestFactory = scala.reflect.ManifestFactory //this makes the ManifestFactory object explicitly available
+
   implicit def convTup[A, B](t: Tuple2[R[A], R[B]]): R[Tuple2[A, B]] = ???
   trait VectorOps[T] {
     def *(v: R[Vector[T]]): R[Vector[T]]
     def +(v: R[Vector[T]]): R[Vector[T]]
     def map[U: Numeric: ClassTag](v: R[T] => R[U]): R[Vector[U]]
     def reconstruct[U: Numeric: ClassTag](v: (R[T], R[T]) => R[U]): R[Vector[U]]
+
+    implicit val ee = 23
+    def xxx(x: R[Int])(implicit m: Manifest[Int]) = ???
 
     def negate: R[Vector[T]]
     def length: R[Double]
