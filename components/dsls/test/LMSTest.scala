@@ -193,7 +193,7 @@ class LMSTest extends FlatSpec with ShouldMatchers {
         val a = l(1)
         val i = l.length
         val h = l.head
-        //        val m = l.map(_ => "string")
+                val m = l.map(_ => "string")
       }
     }
   }
