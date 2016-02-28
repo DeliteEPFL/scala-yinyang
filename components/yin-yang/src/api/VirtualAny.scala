@@ -38,7 +38,7 @@ trait VirtualAny {
 
 /* VirtualAny companion object containing macro implementations. */
 private object VirtualAny {
-
+  //TODO(macrovirt) shouldn't this be the non underscore versions
   def any_==(c: Context)(
     x1: c.Expr[Any], x2: c.Expr[Any]): c.Expr[Any] = {
 
@@ -63,7 +63,7 @@ private object VirtualAny {
     x1: c.Expr[Any], x2: c.Expr[Any]): c.Expr[Any] = {
 
     import c.universe._
-    c.Expr(q"$x1.__equals($x2)")
+    c.Expr(q"$x1.__equals($x2)") //TODO(macrotrans) should this not rather be ".equals"
   }
 
   def any_hashCode(c: Context)(x: c.Expr[Any]): c.Expr[Any] = {

@@ -87,21 +87,24 @@ class LMSTest extends FlatSpec with ShouldMatchers {
 
   // records tests:
 
-  //  // use scala-records: problem: inner macro gets expanded before YY
-  //  it should "record test with scala-records" in {
-  //    import records._ //use scala Records in shallow!
-  //    intercept[NotImplementedError] {
-  //      lmsDebug {
-  //        val r = Record(h = 5)
-  //      }
-  //    }
-  //  }
-  //
-  // use Dynamic, problem: result is not typed and applyDynamicNamed(UNIT("apply"))(v: (String, Any)*)
+  //fool the compiler into thinking that it e
   import scala.language.dynamics
   object Record extends Dynamic {
     def applyDynamicNamed(method: String)(v: (String, Any)*): Any = ??? //
   }
+
+  // use scala-records: problem: inner macro gets expanded before YY
+  // it should "record test with scala-records" in {
+  //   // import records._ //use scala Records in shallow!
+  //   intercept[NotImplementedError] {
+  //     lmsDebug {
+  //       val r = Record(h = 5)
+  //     }
+  //   }
+  // }
+  //
+  // use Dynamic, problem: result is not typed and applyDynamicNamed(UNIT("apply"))(v: (String, Any)*)
+
   //  object Record {
   //    def apply(h: Int) = ???
   //  }
@@ -193,7 +196,7 @@ class LMSTest extends FlatSpec with ShouldMatchers {
         val a = l(1)
         val i = l.length
         val h = l.head
-                val m = l.map(_ => "string")
+        // val m = l.map(_ => "string")
       }
     }
   }

@@ -34,7 +34,7 @@ import scala.collection.mutable
  *   t.toString             =>       infix_toString(t)
  * }}}
  *
- * ===Vritualization of `AnyRef` methods===
+ * ===Virtualization of `AnyRef` methods===
  * {{{
  *   t eq t1                =>       infix_eq(t, t1)
  *   t ne t1                =>       infix_ne(t, t1)
