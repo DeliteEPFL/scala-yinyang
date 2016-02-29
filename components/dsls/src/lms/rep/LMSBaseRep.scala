@@ -7,13 +7,14 @@ import scala.virtualization.lms.common._ //different from base.Base
 import org.scala_lang.virtualized.SourceContext
 
 trait LMSYY extends BaseExp with BaseYinYangManifest with VariablesExp with CodeGenerator with FullyStaged { //mix-in CodeGenerator to check that option of YY
-  //implicit def implicitLift[T: Manifest]: LiftEvidence[T, Rep[T]] = new PolyLift[T]
-  implicit def LiftInt = new PolyLift[Int]
-  implicit def LiftUnit = new PolyLift[Unit]
-  implicit def LiftBoolean = new PolyLift[Boolean]
-  implicit def LiftString = new PolyLift[String]
-  implicit def LiftDouble = new PolyLift[Double]
+  implicit def implicitLift[T: Manifest]: LiftEvidence[T, Rep[T]] = new PolyLift[T]
+  //  implicit def LiftInt = new PolyLift[Int]
+  //  implicit def LiftUnit = new PolyLift[Unit]
+  //  implicit def LiftBoolean = new PolyLift[Boolean]
+  //  implicit def LiftString = new PolyLift[String]
+  //  implicit def LiftDouble = new PolyLift[Double]
 
+  //implicit
   class PolyLift[T: Manifest] extends LiftEvidence[T, Rep[T]] {
     def lift(v: T) = unit(v) //Const(v)
     def hole(tpe: TypeRep[T], symbolId: Int): Rep[T] = ??? //how to access holetable from here? or what else should we do?
@@ -29,6 +30,20 @@ trait BooleanLMS extends LMSYY with BooleanOpsExp with PrimitiveOpsExp with Impl
   //  implicit def repTo[T: Manifest](a: Rep[CI]) = new CIOpsCls(a)
   object Complex {
     def apply(i: Rep[Int], j: Rep[Int]): Rep[Complex] = ???
+  }
+
+  object Tuple2 {
+    def apply[A: Manifest, B: Manifest](a: Rep[A], b: Rep[B])(implicit pos: SourceContext) = make_tuple2(a, b)
+  }
+
+  object Map {
+    def apply[K: Manifest, V: Manifest](elems: Rep[(K, V)]*)(implicit pos: SourceContext) = {
+      val map = hashmap_new[K, V]()
+      for (elem <- elems)
+        hashmap_update(map, elem._1, elem._2)
+      map
+    }
+
   }
 
   type Complex = dsl.lms.Complex

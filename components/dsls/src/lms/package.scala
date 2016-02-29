@@ -7,6 +7,7 @@ import scala.reflect.macros.blackbox.Context
 
 package object lms {
   def lms[T](block: => T): T = macro implementations.boolLMS[T]
+  def lmsdsl[T](block: => T): T = macro implementations.lmsdsl[T]
   def lmsDebug[T](block: => T): T = macro implementations.boolLMSDebug[T]
   def primitiveDsl[T](block: => T): T = macro implementations.primitiveDSL[T]
   def vectorDsl[T](block: => T): T = macro implementations.vectorDSL[T]
@@ -26,7 +27,23 @@ package object lms {
           "virtualizeFunctions" -> false,
           "virtualizeVal" -> false,
           "debug" -> 0,
-          //          "restrictLanguage" -> false,
+          "restrictLanguage" -> false,
+          "ascriptionTransforming" -> false))(block)
+    }
+
+    def lmsdsl[T](c: Context)(block: c.Expr[T]): c.Expr[T] = {
+      YYTransformer[c.type, T](c)(
+        "dsl.lms.rep.ScalaDSL", //don't use version with Reify
+        new GenericTypeTransformer[c.type](c) {
+          override val IRType = "Rep"
+        },
+        None, None,
+        Map(
+          "shallow" -> false,
+          "virtualizeFunctions" -> false,
+          "virtualizeVal" -> false,
+          "debug" -> 0,
+          "restrictLanguage" -> false,
           "ascriptionTransforming" -> false))(block)
     }
 
@@ -42,7 +59,7 @@ package object lms {
           "virtualizeFunctions" -> false,
           "virtualizeVal" -> false,
           "debug" -> 4,
-          //          "restrictLanguage" -> false,
+          "restrictLanguage" -> false,
           "ascriptionTransforming" -> false))(block)
     }
 
@@ -58,7 +75,7 @@ package object lms {
           "virtualizeFunctions" -> false,
           "virtualizeVal" -> false,
           "debug" -> 0,
-          //          "restrictLanguage" -> false,
+          "restrictLanguage" -> false,
           "ascriptionTransforming" -> false))(block)
     }
 
@@ -74,7 +91,7 @@ package object lms {
           "virtualizeFunctions" -> false,
           "virtualizeVal" -> false,
           "debug" -> 4,
-          //          "restrictLanguage" -> false,
+          "restrictLanguage" -> false,
           "ascriptionTransforming" -> false))(block)
     }
 

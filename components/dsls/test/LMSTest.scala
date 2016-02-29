@@ -17,52 +17,91 @@ class LMSTest extends FlatSpec with ShouldMatchers {
   //simple types work
 
   //Booleans work
-  it should "work with booleans" in {
-    intercept[NotImplementedError] {
-      lms {
-        val x = true
-        val y = !x
-        val z = x && x
-      }
-    }
-  }
+  //  it should "work with booleans" in {
+  //    intercept[NotImplementedError] {
+  //      lms {
+  //        val x = true
+  //        val y = !x
+  //        val z = x && x
+  //      }
+  //    }
+  //  }
+
+  //  it should "work with booleans" in {
+  //    intercept[NotImplementedError] {
+  //      lmsdsl {
+  //        val x = 1
+  //        //        val x = true
+  //        //        val y = !x
+  //        //        val z = x && x
+  //      }
+  //    }
+  //  }
 
   //integers work
-  it should "work with integers" in {
-    intercept[NotImplementedError] {
-      lms {
-        val x = 3 //test
-        val y = 4
-        val z = x + y
-        val w = 5 + y
-      }
-    }
-  }
+  //  it should "work with integers" in {
+  //    intercept[NotImplementedError] {
+  //      lms {
+  //        val x = 3 //test
+  //        val y = 4
+  //        val z = x + y
+  //        val w = 5 + y
+  //      }
+  //    }
+  //  }
 
   //TODO why doesn this work?
-  it should "nested Rep's ??? " in {
-    intercept[NotImplementedError] {
-      lms {
-        type A = Int //will be Rep[Int]
-        type B = A //will be Rep[A] = Rep[Rep[Int]] ???
-        type C = B //will be Rep[B] = Rep[Rep[Rep[Int]]] ???
-        //        type R[T] = T
-        val c: C = 7
-        val b: B = 4
-        val cc: B = (c * b) + 3
-      }
-    }
-  }
+  //  it should "nested Rep's ??? " in {
+  //    intercept[NotImplementedError] {
+  //      lms {
+  //        type A = Int //will be Rep[Int]
+  //        type B = A //will be Rep[A] = Rep[Rep[Int]] ???
+  //        type C = B //will be Rep[B] = Rep[Rep[Rep[Int]]] ???
+  //        //        type R[T] = T
+  //        val c: C = 7
+  //        val b: B = 4
+  //        val cc: B = (c * b) + 3
+  //      }
+  //    }
+  //  }
 
-  it should "work on primitiveOps " in {
-    intercept[NotImplementedError] {
-      primitiveDsl {
-        val x = 3 + 9
-        val s = "segrf"
-        val d = 6.0 * 8
-      }
-    }
-  }
+  //  it should "work on primitiveOps " in {
+  //    intercept[NotImplementedError] {
+  //      primitiveDsl {
+  //        val x = 3 + 9
+  //        val s = "segrf"
+  //        val d = 6.0 * 8
+  //      }
+  //    }
+  //  }
+
+  //  it should "should work with scala collection" in {
+  //    intercept[NotImplementedError] {
+  //      lmsDebug {
+  //        val l: List[Int] = scala.collection.immutable.List(1, 2, 3, 4)
+  //        val a = l(1)
+  //        val i = l.length
+  //        val h = l.head
+  //        // val m = l.map(_ => "string")
+  //      }
+  //    }
+  //  }
+  //
+  //  it should "work with complex numbers" in {
+  //    intercept[NotImplementedError] {
+  //      implicit val i = 9
+  //      lms {
+  //        val c = dsl.lms.Complex(1, 2)
+  //        val x = c conv c
+  //        val y = c blop c
+  //        //        val bb = c.mani("Hello")
+  //        //        val cc = c.implVal(23.34)
+  //        //        val aa = c.impli(3)
+  //      }
+  //    }
+  //  }
+
+  //NOT WORKING? :
 
   //  trait T extends dsl.lms.rep.VectorOpsExp {
   //    val v0: T.this.Rep[T.this.Vector[Int]] = T.this.Vector.apply[Int](4)(scala.reflect.ManifestFactory.Int);
@@ -88,10 +127,6 @@ class LMSTest extends FlatSpec with ShouldMatchers {
   // records tests:
 
   //fool the compiler into thinking that it e
-  import scala.language.dynamics
-  object Record extends Dynamic {
-    def applyDynamicNamed(method: String)(v: (String, Any)*): Any = ??? //
-  }
 
   // use scala-records: problem: inner macro gets expanded before YY
   // it should "record test with scala-records" in {
@@ -132,21 +167,41 @@ class LMSTest extends FlatSpec with ShouldMatchers {
   //    }
   //  }
 
-  //  //tuples don't work
-  //  it should "work with tuples" in {
-  //    intercept[NotImplementedError] {
-  //      boolDLMS {
-  //        val i = 1
-  //        val x = "edfsc"
-  //        val z = 3.2
-  //        val a = (x, i, z)
-  //        val b = a._2
-  //        val c = (a._1, a._3)
-  //        val l = new List(1, 2, 3)
-  //        val elem = l(1)
-  //      }
-  //    }
-  //  }
+  import scala.language.dynamics
+  object Record extends Dynamic {
+    def applyDynamicNamed(method: String)(v: (String, Any)*): Any = ??? //
+  }
+  //
+  //  type Item = {val i:Int; val s:String}
+  //  type Record
+  //  object Record { def apply(i:Int, s:String) }
+  //  def Record(i:Int, s:String):Any = ???
+  //  import records.Record
+
+  //tuples don't work
+  it should "work with tuples" in {
+
+    intercept[NotImplementedError] {
+      lmsDebug {
+        val t = (3, "hello")
+        val t1 = t._1
+        val op = t._1 + 4
+        val r = Record(i = 4, s = "s")
+        //        val z = r.i
+        //        val o = 'c'
+        //        val z = new Iterator[Int]{ def hasNext = true; def next() = 3} //
+        //        val z = new scala.collection.immutable.ListMap() // class Exp is abstract; cannot be instantiated
+        //        val i = 1
+        //        val x = "edfsc"
+        //        val z = 3.2
+        //        val a = (x, i, z)
+        //        val b = a._2
+        //        val c = (a._1, a._3)
+        //        val l = List(1, 2, 3)
+        //        val elem = l(1)
+      }
+    }
+  }
   //
   //  case class MyC(u: Int)
   //  class MyClass(val u: Int)
@@ -189,31 +244,6 @@ class LMSTest extends FlatSpec with ShouldMatchers {
   //    }
   //  }
   //
-  it should "should work with scala collection" in {
-    intercept[NotImplementedError] {
-      lmsDebug {
-        val l: List[Int] = scala.collection.immutable.List(1, 2, 3, 4)
-        val a = l(1)
-        val i = l.length
-        val h = l.head
-        // val m = l.map(_ => "string")
-      }
-    }
-  }
-
-  it should "work with complex numbers" in {
-    intercept[NotImplementedError] {
-      implicit val i = 9
-      lms {
-        val c = dsl.lms.Complex(1, 2)
-        val x = c conv c
-        val y = c blop c
-        //        val bb = c.mani("Hello")
-        //        val cc = c.implVal(23.34)
-        //        val aa = c.impli(3)
-      }
-    }
-  }
 
   //  it should "not break implicit methods" in {
   //    intercept[NotImplementedError] {
