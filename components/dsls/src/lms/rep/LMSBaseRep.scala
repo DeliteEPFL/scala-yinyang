@@ -65,7 +65,7 @@ trait VectorOps extends Variables with PrimitiveOps with LiftPrimitives with Imp
 
   //syntax
   object Vector {
-    def apply[A: Manifest](length: Rep[Int]) = vectorNew(length)
+    def apply(length: Rep[Int]) = vectorNew(length)
   }
 
   implicit class VectorOpsCls[A: Manifest](x: Rep[Vector[A]]) {

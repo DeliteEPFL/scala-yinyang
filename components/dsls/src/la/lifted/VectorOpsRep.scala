@@ -342,7 +342,7 @@ trait VectorDSL
 
   implicit def convTup[A, B](t: Tuple2[R[A], R[B]]): R[Tuple2[A, B]] = ???
   trait VectorOps[T] {
-    def *(v: R[Vector[T]]): R[Vector[T]]
+    def *(v: R[Vector[T]])(implicit i: Int): R[Vector[T]]
     def +(v: R[Vector[T]]): R[Vector[T]]
     def map[U: Numeric: ClassTag](v: R[T] => R[U]): R[Vector[U]]
     def reconstruct[U: Numeric: ClassTag](v: (R[T], R[T]) => R[U]): R[Vector[U]]
@@ -382,7 +382,8 @@ trait VectorDSL
   }
 
   implicit class VectorOpsOf[T](v: R[Vector[T]]) extends VectorOps[T] {
-    def *(v: R[Vector[T]]): R[Vector[T]] = ???
+    implicit val n = 1 //simulate implicit SourceContext
+    def *(v: R[Vector[T]])(implicit i: Int): R[Vector[T]] = ???
     def +(v: R[Vector[T]]): R[Vector[T]] = ???
     def map[U: Numeric: ClassTag](v: R[T] => R[U]): R[Vector[U]] = ???
     def reconstruct[U: Numeric: ClassTag](v: (R[T], R[T]) => R[U]): R[Vector[U]] = ???

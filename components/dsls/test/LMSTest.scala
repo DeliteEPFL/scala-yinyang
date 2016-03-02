@@ -111,18 +111,19 @@ class LMSTest extends FlatSpec with ShouldMatchers {
   //
   //println("TEST: " + new T {}.v2)
   //this doesn't work because YinYang will also wrap Manifests!
-  //  it should "work on primitiveOps " in {
-  //    trait TT extends dsl.lms.rep.VectorOps {
-  //      type Rep[T] = T
-  //      intercept[NotImplementedError] {
-  //        vectorDsl {
-  //          val v0 = Vector[Int](4)
-  //          val v1 = Vector[Int](3)
-  //          val v2 = v0 + v1
-  //        }
-  //      }
-  //    }
-  //  }
+  import dsl.la.Vector
+  it should "work on primitiveOps " in {
+    //trait TT extends dsl.lms.rep.VectorOps {
+    //      type Rep[T] = T
+    intercept[NotImplementedError] {
+      vectorDsl {
+        val v0 = Vector[Int](4)
+        val v1 = Vector[Int](3)
+        val v2 = v0 + v1
+      }
+    }
+    //    }
+  }
 
   // records tests:
 
@@ -186,7 +187,15 @@ class LMSTest extends FlatSpec with ShouldMatchers {
         val t = (3, "hello")
         val t1 = t._1
         val op = t._1 + 4
-        val r = Record(i = 4, s = "s")
+        //        val r = Record(i = 4, s = "s")
+        def m(i: Int) = i
+        m(3)
+        def x()(implicit i: Int) = i
+        implicit val s = 8
+        x()
+        x()(6)
+        val i = 5
+        x()(i)
         //        val z = r.i
         //        val o = 'c'
         //        val z = new Iterator[Int]{ def hasNext = true; def next() = 3} //
