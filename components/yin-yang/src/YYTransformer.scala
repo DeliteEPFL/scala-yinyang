@@ -235,12 +235,15 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
             //   dslInstance.interpret[${retTypeString}](..${sortedHoles})
             // """
           }
+          println(showCode(dsl))
+          // log(s"${show(c.untypecheck(dsl))}", 0)
+          // log(s"${show(c.typecheck(c.untypecheck(dsl)))}", 0)
           Block(List(dsl), guardedExecute)
       }
 
       log(s"Final tree: ${showRaw(c.untypecheck(dslTree))}", 3)
       log(s"Final untyped: ${show(c.untypecheck(dslTree), printTypes = true)}", 3)
-      log(s"Final typed: ${show(c.typecheck(c.untypecheck(dslTree)), printTypes = true)}\n")
+      log(s"Final typed: ${show(c.typecheck(c.untypecheck(dslTree)), printTypes = true)}\n", 1)
       log("-------- YYTransformer DONE ----------\n\n", 2)
       c.Expr[T](c.untypecheck(dslTree))
     }
@@ -395,6 +398,7 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
     if (_reflInstance == None) {
       log("Reflectively instantiating and memoizing DSL.", 2)
       val st = System.currentTimeMillis()
+      println(showCode(c.untypecheck(Block(List(dslDef), q"new ${Ident(TypeName(className))}()"))))
       _reflInstance = Some(c.eval(
         c.Expr(c.untypecheck(Block(List(dslDef), q"new ${Ident(TypeName(className))}()")))))
       log(s"Eval time: ${(System.currentTimeMillis() - st)}", 2)
@@ -407,7 +411,7 @@ abstract class YYTransformer[C <: Context, T](val c: C, dslName: String, val con
   def composeDSL(compilVars: List[Symbol])(transformedBody: Tree): Tree = q"""
     class ${TypeName(className)} extends $dslTrait {
       ..${compilVars.map(k => q"var ${TermName("captured$" + k.name.decodedName.toString)} = $k")}
-      def main(): Any = {$transformedBody}
+      def main(): Unit = {$transformedBody}
     }
   """
 
